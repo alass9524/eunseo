@@ -1,0 +1,561 @@
+/* ==========================================================================
+   FILM — design tokens extracted from biga.cat
+   ========================================================================== */
+:root {
+  /* color */
+  --white: #fff;
+  --black: #000;
+  --grey: #e2e6ee;          /* biga-grey : page ground */
+  --light-grey: #b3b3b3;    /* inactive nav on white pages */
+  --dark-grey: #4d4d4d;
+  --pink: #ff3263;          /* signal colour : links, placeholders, loader */
+
+  /* type */
+  --font-sans: "Crimson Text", "Pretendard", Georgia, serif;
+  --font-ko: "Pretendard", -apple-system, sans-serif;
+  --font-size-base: 0.9375rem;             /* 15px @ 16px root */
+  --line-height: 1.06777;
+  --text: max(11px, min(var(--font-size-base), 18px));
+
+  /* spacing scale */
+  --p-xl: 7.5rem;
+  --p-l: 3.75rem;
+  --p-m: 2.5rem;
+  --p-s: 1.875rem;   /* 30px gutter */
+  --p-xs: 1.25rem;   /* 20px */
+  --p-xxs: 0.625rem; /* 10px */
+
+  --pad: var(--p-s);
+  --split: 48.7%;   /* home: logo column / visor column */
+
+  /* motion */
+  --ease-out-quart: cubic-bezier(.165, .84, .44, 1);
+  --ease-in-out-quart: cubic-bezier(.77, 0, .175, 1);
+
+  font-size: 16px;
+}
+@media (min-width: 1024px) {
+  :root { font-size: clamp(10px, 1.1111vw, 22px); }
+}
+@media (max-width: 1023px) {
+  :root { --pad: var(--p-xs); }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--grey);
+  color: var(--pink);
+  font-family: var(--font-sans);
+  font-size: var(--text);
+  line-height: var(--line-height);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .3s ease-out;
+}
+body.--white { background: var(--white); }
+ul, ol { list-style: none; margin: 0; padding: 0; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+a:focus-visible, button:focus-visible { outline: 2px dashed currentColor; outline-offset: 2px; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+img { display: block; max-width: 100%; }
+main:focus { outline: none; }
+
+.wordmark { display: block; width: 100%; height: auto; aspect-ratio: 368 / 100; fill: currentColor; }
+
+/* image placeholder: coloured block until the photo arrives */
+.ph { position: relative; overflow: hidden; background: var(--pink); }
+.ph img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .2s .3s; }
+.ph img.--loaded { opacity: 1; }
+body.--white .ph { background: var(--black); }
+
+/* ==========================================================================
+   Loader — pink curtain with small white wordmark
+   ========================================================================== */
+.loader {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center;
+  background: var(--pink); color: var(--white);
+  transition: opacity .5s var(--ease-out-quart), visibility 0s .5s;
+}
+.loader .wordmark { width: 70px; }
+.loader.--out { opacity: 0; visibility: hidden; }
+
+/* ==========================================================================
+   Header / navigation
+   ========================================================================== */
+.header {
+  --menu-w: 6.25rem; --menu-h: 2.5rem; --menu-r: 1.5625rem;
+  --menu-link: 3.25rem;
+  /* --menu-fit-w/-h are measured from .menu__body in app.js, so the panel
+     opens exactly as big as its contents (capped by the viewport) */
+  --menu-open-w: min(var(--menu-fit-w, 20rem), calc(100vw - 2 * var(--pad) + var(--menu-r)));
+  --menu-open-h: min(var(--menu-fit-h, 30rem), calc(100vh - 2 * var(--pad) + var(--menu-r)));
+  --ease-menu: cubic-bezier(.76, 0, .24, 1);
+  --ease-rise: cubic-bezier(.215, .61, .355, 1);
+  position: fixed; top: var(--pad); left: var(--pad); z-index: 50;
+}
+
+/* Menu: plain text, no box. It steps aside while the panel is open (Close
+   lives inside the panel, on the Index row) and returns once it has shut. */
+.menu__btn {
+  position: relative; z-index: 2; display: block;
+  line-height: var(--line-height); color: var(--black);
+  transition: color .2s, opacity .3s .9s, visibility 0s .9s;
+}
+.menu__btn:hover { color: var(--pink); }
+.header.--open .menu__btn {
+  opacity: 0; visibility: hidden;
+  transition: opacity .2s, visibility 0s .2s;
+}
+
+/* panel: sits hidden under the button, grows out from the top-left corner.
+   Closing waits .35s so the links can fall away first. */
+.menu__panel {
+  position: absolute; top: 0; left: 0;
+  width: var(--menu-w); height: var(--menu-h);
+  overflow: hidden;  /* square corners; --menu-r only sets the inset now */
+  background: var(--white);
+  transition: width .75s var(--ease-menu) .35s, height .75s var(--ease-menu) .35s,
+              top .75s var(--ease-menu) .35s, left .75s var(--ease-menu) .35s,
+              visibility 0s 1.1s;
+  visibility: hidden;
+}
+body.--white .menu__panel { background: var(--grey); }
+/* once open, the panel follows its contents frame by frame (the Archive
+   list folding in and out), so height stops easing */
+.header.--open.--settled .menu__panel { transition: none; }
+.header.--open .menu__panel {
+  width: var(--menu-open-w); height: var(--menu-open-h);
+  top: calc(-1 * var(--menu-r)); left: calc(-1 * var(--menu-r));
+  visibility: visible;
+  transition-delay: 0s;
+}
+/* sized by its own content (measured for the panel), and laid out at that
+   size from the start so nothing reflows while the panel grows */
+.menu__body {
+  position: absolute; top: 0; left: 0;
+  width: max-content; min-width: 26rem;
+  max-height: calc(100vh - 2 * var(--pad) + var(--menu-r)); overflow-y: auto;
+  /* left padding = the panel's overhang, so links line up with the page
+     gutter; top and bottom are equal, with Close sharing the Index row */
+  padding: var(--p-m) var(--menu-r);
+  visibility: hidden; transition: visibility 0s 1.1s;
+}
+.header.--open .menu__body { visibility: visible; transition-delay: 0s; }
+
+/* big links: each one flips up from below (rotateX in a low perspective)
+   in a stagger; black by default, pink marks where you are */
+/* the flip wrapper carries the perspective, not the li: perspective on the
+   li stopped Chrome from painting the Archive list that unfolds inside it */
+.menu__flip { display: block; perspective: 7.5rem; perspective-origin: bottom; }
+.menu__links li.--first { display: flex; align-items: flex-start; justify-content: space-between; gap: 2em; }
+/* Close's cap top lines up with the cap top of "Index". Both line boxes
+   start at the row top; the margin makes up the difference between where
+   each size puts its capital (Crimson Text: ascent .95, descent .35, cap I
+   .6465, C .6514 → the I top sits .2285em into a 1.15 line, the C top
+   .1825em into a 1.068 one) */
+.menu__close {
+  line-height: var(--line-height);
+  margin-top: calc(.2285 * var(--menu-link) - .1825em);
+  color: var(--pink);
+  opacity: 0; transition: opacity .3s, color .2s;
+}
+.menu__close:hover { color: var(--black); }
+.header.--open .menu__close { opacity: 1; transition: opacity .5s var(--ease-rise) .5s, color .2s; }
+.menu__flip > a {
+  display: inline-block;
+  font-size: var(--menu-link); line-height: 1.15; color: var(--black);
+  opacity: 0; transform: translate(-1.25rem, 5rem) rotateX(90deg);
+  transition: opacity .5s var(--ease-menu), transform .5s var(--ease-menu), color .2s;
+}
+.header.--open .menu__flip > a {
+  opacity: 1; transform: none;
+  transition: opacity .65s var(--ease-rise) calc(.5s + var(--i) * .1s),
+              transform .65s var(--ease-rise) calc(.5s + var(--i) * .1s), color .2s;
+}
+.menu__links a:hover, .menu__links a.--current { color: var(--pink); }
+
+/* archive filters: folded away under "Archive" and unfolded only while the
+   Archive item is hovered (or focused from the keyboard). The 0fr → 1fr
+   grid row animates the height; the clip keeps the list's margins hidden
+   too. Touch screens can't hover, so there the list simply stays open. */
+.menu__subwrap {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows .4s var(--ease-menu);
+}
+.menu__subclip { min-height: 0; overflow: hidden; }
+.menu__links li:hover > .menu__subwrap,
+.menu__links li:focus-within > .menu__subwrap { grid-template-rows: 1fr; }
+@media (hover: none) { .menu__subwrap { grid-template-rows: 1fr; } }
+.menu__sub {
+  display: grid; grid-template-columns: auto auto; column-gap: 2em; row-gap: .2em;
+  justify-content: start;
+  margin: .2em 0 .7em .15em;
+  opacity: 0; transform: translateY(.75rem);
+  transition: opacity .3s, transform .3s;
+}
+.header.--open .menu__sub {
+  opacity: 1; transform: none;
+  transition: opacity .5s var(--ease-rise) calc(.65s + var(--i) * .1s),
+              transform .5s var(--ease-rise) calc(.65s + var(--i) * .1s);
+}
+.menu__sub a { color: var(--black); transition: color .2s; }
+.menu__sub .n { font-size: .7em; vertical-align: super; margin-left: .15em; }
+
+/* ==========================================================================
+   HOME — logo column + visor + floating image stream
+   ========================================================================== */
+.home { position: relative; }
+.home__body { position: relative; }
+
+/* each layer covers the whole photo stream; the screen-sized pin inside it
+   sticks to the top while scrolling, then leaves with the layer's end, so
+   the footer below follows in the normal flow */
+.home__layer { position: absolute; inset: 0; pointer-events: none; }
+.home__layer.--logo { z-index: 1; }
+.home__layer.--visor { z-index: 0; }
+.home__pin { position: sticky; top: 0; height: 100vh; }
+.home__pin > * { pointer-events: auto; }
+
+.home__logo {
+  position: absolute; left: 0; bottom: 0;
+  width: calc(var(--split) + (1 - var(--reveal)) * (100% - var(--split)));
+  padding: var(--pad) var(--p-xs) var(--pad) var(--pad);
+  color: var(--pink);
+  transition: width .1s linear;
+}
+
+/* width is fixed (not tied to --reveal) — the panel is always full size and
+   just slides in from off-screen via left, instead of growing/expanding
+   from a squeezed sliver. left uses the same formula as .home__logo's
+   width, so the panel's leading edge still tracks the logo's shrinking
+   edge exactly (they stay visually attached) — only now the motion is a
+   clean slide instead of a stretch. */
+.home__visor {
+  position: absolute; top: 0;
+  left: calc(var(--split) + (1 - var(--reveal)) * (100% - var(--split)));
+  width: calc(100% - var(--split));
+  height: 100vh;
+  overflow: hidden;
+  transition: left .1s linear;
+}
+.home__visor > div {
+  position: relative;
+  display: flex; flex-direction: column; gap: var(--p-xs);
+  height: calc(100vh - var(--pad));
+  padding: var(--pad);
+  background: var(--white); color: var(--black);
+}
+.home__visor .info { height: 2.4em; }
+.home__visor .more { position: absolute; top: var(--pad); right: var(--pad); }
+.home__visor .more:hover { color: var(--pink); }
+.thumbnails {
+  display: grid; gap: var(--p-xxs);
+  grid-template-columns: repeat(10, 1.875rem);
+  grid-auto-rows: 2.5rem;
+}
+.thumbnails li { position: relative; }
+.thumbnails li::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+.thumbnails li.--current::after { background: var(--pink); }
+.thumbnails button { display: block; width: 100%; height: 100%; }
+.thumbnails .ph { width: 100%; height: 100%; }
+.thumbnails .ph img { transition-delay: .05s; }
+.visor { position: relative; flex-grow: 1; margin-top: var(--p-xl); }
+/* no box, no crop: every photo keeps its own natural width (height fixed,
+   width auto — the browser scales it from the photo's own intrinsic
+   ratio), so a portrait or square photo is never stretched or cut down to
+   a landscape shape. Centered horizontally, and anchored to the BOTTOM of
+   .visor instead of the top — so the photo's own bottom edge always sits
+   right at the bottom of the box with no gap to tune, and any leftover
+   room collects above the photo instead (between it and the thumbnails). */
+.visor img {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  height: 28rem; width: auto;
+  opacity: 0; transition: opacity .35s ease-out;
+}
+/* only the photo on show takes clicks (it opens its set), so the empty
+   space beside a portrait photo stays inert */
+.visor img { pointer-events: none; }
+.visor img.--show { opacity: 1; pointer-events: auto; cursor: pointer; }
+
+/* typography-first entrance, driven by --reveal (0…1, set from scrollY in
+   app.js — not a one-off timed animation). The logo's width and the visor's
+   left/width share the same --reveal term (see .home__logo / .home__visor
+   above), so their shared edge moves as one piece instead of two separately
+   timed animations. */
+.home { --reveal: 0; }
+
+/* The floating photos are a structurally separate concern from the
+   logo/visor reveal above: the whole stream starts BELOW the first
+   viewport (.home__stages padding-top, below), so plain page scrolling
+   brings it up — no per-photo entrance animation, no scroll snapping. */
+
+/* stages: one band per photo (every image in a set floats, not just its main).
+   Shorter than a full viewport so several are on screen at once, like biga.cat's
+   packed image stream, instead of one photo dominating each screen in turn. */
+.home__stages {
+  position: relative; z-index: 2; pointer-events: none;
+  /* pushes the entire floating-photo stream below the first viewport —
+     see the comment above */
+  padding-top: 100vh;
+}
+.stage {
+  position: relative;
+  height: 55vh;
+  display: flex; align-items: center;
+  padding: 9rem var(--pad) var(--pad);
+}
+.stage:last-child { height: 65vh; }
+.stage__img { display: block; margin-left: var(--x); pointer-events: auto; }
+/* no forced box, no crop: height only, width auto — every photo keeps its
+   own natural proportions (same fix as the visor's main photo). --w is
+   gone; a fixed width is exactly what made specific photos look "too big"
+   (a wide source photo stretched/cropped to fill a wide box looks huge
+   next to a portrait one cropped into the same box). Sizes are also a
+   narrower band now (16–20rem) instead of 10–31rem, so no one photo
+   dominates the others. */
+.stage__img .ph { width: auto; height: auto; background: transparent; }
+/* no background color here — the point of backdrop-filter is to blur
+   whatever is actually behind (page, other floating photos) and show it
+   through; painting a flat color first would hide that and just tint the
+   semi-transparent photo instead (that was the earlier "magenta" bug, and
+   painting it grey instead of pink only swapped one flat tint for another) */
+.stage__img .ph::before {
+  content: ""; position: absolute; inset: 0; z-index: 0;
+  backdrop-filter: blur(0.5vw); -webkit-backdrop-filter: blur(0.5vw);
+}
+.stage__img .ph img {
+  display: block; width: auto; height: var(--h); object-fit: unset;
+  position: relative; z-index: 1;
+  filter: brightness(1.12) contrast(1.35) saturate(1.3);
+  transition: opacity .2s .3s;
+}
+.stage__img img.--loaded { opacity: 0.58; }
+.stage.--1 { --h: 15.3rem; }
+.stage.--2 { --h: 17.1rem; }
+.stage.--3 { --h: 18rem; }
+.stage.--4 { --h: 14.4rem; }
+/* spread across the full width in even quarters. --p4 uses margin-left:auto
+   (a flex "push to the far edge" trick) instead of calculating a left
+   offset from a width, since width is no longer a fixed, known value. */
+.stage.--p1 { --x: 0; }
+.stage.--p2 { --x: 25vw; }
+.stage.--p3 { --x: 50vw; align-items: flex-start; }
+.stage.--p4 { --x: auto; align-items: flex-end; padding-bottom: 14rem; }
+
+/* Criteria: the home page footer, in the normal flow after the photos */
+.criteria {
+  position: relative;
+  padding: 9rem var(--pad) 2.75rem;
+  color: #111; font-family: var(--font-ko); word-break: keep-all;
+  --rule: 1px solid #222;
+}
+.criteria h2 {
+  margin: 0; padding: 2.4rem 0 1rem;
+  border-top: var(--rule);
+  font-size: .9rem; font-weight: 500; line-height: 1.4;
+}
+.criteria li {
+  display: grid; grid-template-columns: calc(17.35vw - var(--pad)) 1fr; align-items: center;
+  min-height: 3.25rem;
+  border-top: var(--rule);
+}
+.criteria li:last-child { border-bottom: var(--rule); }
+.criteria li span { font-size: .9rem; font-weight: 500; }
+.criteria li p { font-size: 1.3rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.3; padding: .5rem 0; }
+
+/* ==========================================================================
+   ARCHIVE (Proyectos) — rows
+   ========================================================================== */
+.archive { padding-top: 15.9375rem; padding-bottom: var(--p-xl); }
+.archive__logo {
+  width: calc(100% - var(--split) - var(--pad));
+  margin: -9.5rem 0 var(--p-l) auto;
+  padding-right: var(--pad);
+  color: var(--black);
+  box-sizing: content-box;
+  max-width: 40.625rem;
+}
+.row {
+  display: flex; gap: var(--p-xs); align-items: flex-start;
+  padding: var(--p-xs) var(--pad);
+  transition: background-color .3s ease-out;
+}
+.row:hover { background: var(--white); }
+.row + .row { margin-top: var(--p-xxs); }
+.row__cover { flex: 0 0 13.75rem; aspect-ratio: 2 / 3; }
+.row__cover.--land { aspect-ratio: 3 / 2; flex-basis: 16.25rem; }
+.row__text { flex: 0 0 21rem; color: var(--pink); }
+.row__text .quote { margin-top: 1.1em; max-width: 19rem; }
+/* Korean translation: Pretendard runs visibly larger than Crimson Text at
+   the same size, so it is scaled down slightly to read as the same size */
+.--ko { font-family: var(--font-ko); font-size: .88em; line-height: 1.5; word-break: keep-all; }
+.row__text .quote.--ko { margin-top: .8em; }
+.row__images {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; justify-content: flex-end; gap: var(--p-xs);
+}
+.row__images .ph { flex: 0 1 auto; min-width: 0; height: var(--h); aspect-ratio: var(--ar); }
+.row.--hidden { display: none; }
+
+/* ==========================================================================
+   SET detail — white page
+   ========================================================================== */
+.set { padding-bottom: var(--p-xl); color: var(--black); }
+.set__head {
+  display: grid; grid-template-columns: var(--split) 20% 1fr;
+  padding: var(--pad);
+  padding-top: calc(var(--pad) - 2px);
+  min-height: 15rem;
+}
+.set__head .col-code { grid-column: 2; }
+.set__head .col-code .grey { color: var(--light-grey); }
+.set__head .col-code a.grey:hover { color: var(--pink); }
+.set__head .col-spec { grid-column: 3; }
+.set__hero {
+  display: grid; grid-template-columns: var(--split) 1fr;
+  align-items: stretch;
+  padding: 0 var(--pad);
+}
+.set__hero .left {
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding-right: var(--p-m);
+}
+.set__hero .left .wordmark { max-width: 40.625rem; }
+.set__hero .quote { max-width: 34rem; }
+.set__hero .quote.--ko { margin-top: .8em; }
+.set__hero .main { aspect-ratio: var(--ar); max-height: 80vh; }
+.set__hero .main.--port { width: 60%; }
+
+.gallery { margin-top: var(--p-xs); padding: 0 var(--pad); }
+.gallery__row { display: flex; gap: var(--p-xs); align-items: flex-start; margin-bottom: var(--p-xs); }
+.gallery__row .ph { aspect-ratio: var(--ar); flex: 0 0 var(--w); margin-left: var(--x, 0); }
+
+.set .ph img { cursor: pointer; }
+
+/* lightbox: a clicked photo, centred over a white veil */
+.lightbox {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: center; padding: var(--pad);
+  background: rgba(255, 255, 255, .9);
+  cursor: pointer;
+  opacity: 0; visibility: hidden;
+  transition: opacity .3s var(--ease-out-quart), visibility 0s .3s;
+}
+.lightbox.--open { opacity: 1; visibility: visible; transition-delay: 0s; }
+.lightbox img { max-width: 84vw; max-height: 84vh; width: auto; height: auto; object-fit: contain; }
+
+.set__next {
+  display: flex; justify-content: space-between;
+  margin-top: var(--p-l); padding: 0 var(--pad);
+}
+.set__next a:hover { color: var(--pink); }
+
+/* ==========================================================================
+   ABOUT (Despacho)
+   ========================================================================== */
+.about__hero { position: relative; height: 100vh; }
+.about__hero .ph { position: absolute; inset: 0; background: var(--grey); }
+.about__hero .wordmark {
+  position: absolute; left: 50%; top: 50%;
+  width: min(45%, 32rem); transform: translate(-50%, -50%);
+  color: var(--white);
+}
+.about__intro {
+  padding: var(--p-xl) var(--pad) var(--p-l);
+  margin-left: var(--split);
+  max-width: calc(var(--split) + 20rem);
+  color: var(--black);
+  font-size: 1.5rem; line-height: 1.15;
+}
+.glossary {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--p-m) var(--p-xs);
+  padding: var(--p-l) var(--pad) var(--p-xl);
+}
+.glossary h3 { margin: 0 0 1.1em; font: inherit; color: var(--black); }
+.glossary p { color: var(--pink); max-width: 20rem; }
+.about__intro .--ko, .glossary .--ko { margin-top: .8em; }
+
+/* ==========================================================================
+   CONTACT
+   ========================================================================== */
+.contact { min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 15.9375rem var(--pad) var(--pad); }
+.contact__grid { display: grid; grid-template-columns: var(--split) 20% 1fr; color: var(--black); }
+.contact__grid > div { grid-column: auto; }
+.contact__grid .c1 { grid-column: 2; }
+.contact__grid a:hover { color: var(--pink); }
+.contact .wordmark { color: var(--pink); max-width: 40.625rem; }
+
+/* ==========================================================================
+   Page transition
+   ========================================================================== */
+#app > * { animation: page-in .6s var(--ease-out-quart) both; }
+@keyframes page-in { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ==========================================================================
+   Mobile / tablet
+   ========================================================================== */
+@media (max-width: 1023px) {
+  .header { --menu-link: 2.5rem; }
+
+  .home__layer.--visor { z-index: 3; }
+  .home__visor { left: auto; right: 0; width: calc(100% - 7.5rem); height: auto; }
+  .home__visor > div { flex-direction: row; height: 9.375rem; gap: var(--p-xxs); padding: var(--pad); }
+  .home__visor .info { flex: 0 0 5rem; height: auto; display: flex; flex-direction: column; justify-content: space-between; }
+  .home__visor .more { position: static; }
+  .thumbnails { display: none; }
+  .home__logo { width: 100%; padding: var(--pad); }
+  .stage { padding-top: 11rem; padding-bottom: 8rem; }
+  .stage.--1 { --w: 13rem; --h: 13rem; }
+  .stage.--2 { --w: 100%; --h: 13.5rem; }
+  .stage.--3 { --w: 11rem; --h: 16.5rem; }
+  .stage.--4 { --w: 8rem; --h: 8rem; }
+  .stage.--p1 { --x: 0; }
+  .stage.--p2 { --x: calc((100% - var(--w)) / 2); }
+  .stage.--p3, .stage.--p4 { --x: calc(100% - var(--w)); padding-bottom: 8rem; }
+
+  .archive { padding-top: 11rem; }
+  .archive__logo { width: auto; max-width: none; margin: 0 var(--pad) var(--p-m); padding: 0; }
+  .row { flex-wrap: wrap; }
+  .row__cover { flex-basis: calc(50% - var(--p-xxs)); }
+  .row__cover.--land { flex-basis: 100%; }
+  .row__text { flex: 1 1 calc(50% - var(--p-xxs)); }
+  .row__images { flex-basis: 100%; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+  .row__images .ph { flex: 0 0 auto; height: calc(var(--h) * .6); }
+
+  .set__head { grid-template-columns: 1fr 1fr; row-gap: var(--p-xs); padding-top: 9rem; min-height: 0; }
+  .set__head .col-code { grid-column: 1; }
+  .set__head .col-spec { grid-column: 2; }
+  .set__hero { grid-template-columns: 1fr; gap: var(--p-xs); }
+  .set__hero .left { padding: 0; gap: var(--p-xs); }
+  .set__hero .main.--port { width: 75%; }
+  .gallery__row { flex-wrap: wrap; }
+  .gallery__row .ph { flex-basis: 100%; margin-left: 0; }
+  .gallery__row .ph.--port { flex-basis: 70%; }
+  .gallery__row .ph.--port:nth-child(2) { margin-left: 30%; }
+
+  .criteria li { grid-template-columns: 4.5rem 1fr; }
+  .criteria li p { font-size: 1.05rem; }
+
+  .about__hero .wordmark { width: 70%; }
+  .about__intro { margin-left: 0; font-size: 1.25rem; padding-top: var(--p-l); }
+  .glossary { grid-template-columns: 1fr 1fr; }
+
+  .contact { padding-top: 11rem; }
+  .contact__grid { grid-template-columns: 1fr 1fr; row-gap: var(--p-xs); }
+  .contact__grid .c1 { grid-column: 1; }
+}
+@media (max-width: 480px) {
+  .glossary { grid-template-columns: 1fr; }
+}
+
+.about__intro { line-height: 1.15; }

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FILM — Photo Archive</title>
+<meta name="description" content="A photo archive of ten sets and sixty-one photographs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261019i">
+</head>
+<body class="--home">
+
+<!-- Wordmark: stencil / construct letters, drawn after the structure of the biga.cat logo -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="wordmark" viewBox="0 0 368 100">
+      <!-- F -->
+      <rect x="0" y="0" width="10" height="100"/>
+      <rect x="16" y="0" width="54" height="10"/>
+      <rect x="16" y="45" width="40" height="10"/>
+      <!-- I -->
+      <rect x="94" y="0" width="25" height="10"/>
+      <rect x="139" y="0" width="25" height="10"/>
+      <rect x="124" y="0" width="10" height="100"/>
+      <rect x="94" y="90" width="25" height="10"/>
+      <rect x="139" y="90" width="25" height="10"/>
+      <!-- L -->
+      <rect x="188" y="0" width="10" height="100"/>
+      <rect x="204" y="90" width="50" height="10"/>
+      <!-- M -->
+      <rect x="278" y="0" width="10" height="100"/>
+      <rect x="358" y="0" width="10" height="100"/>
+      <polygon points="294,0 305,0 328,58 323,72"/>
+      <polygon points="352,0 341,0 318,58 323,72"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <svg class="wordmark"><use href="#wordmark"/></svg>
+</div>
+
+<!-- Side menu: text button top-left; the panel grows out of it to fit its
+     links, which rise in one by one (after the awwwards side-menu demo) -->
+<header class="header" id="header">
+  <div class="menu__panel" id="menu-panel">
+    <nav class="menu__body" aria-label="Main menu">
+      <ul class="menu__links" id="nav-list"></ul>
+    </nav>
+  </div>
+  <button class="menu__btn" id="menu-btn" aria-expanded="false" aria-controls="menu-panel">Menu</button>
+</header>
+
+<main id="app" tabindex="-1"></main>
+
+<script src="app.js?v=20261019i"></script>
+</body>
+</html>
