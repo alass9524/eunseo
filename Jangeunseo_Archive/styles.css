@@ -71,7 +71,7 @@ main:focus { outline: none; }
 .ph { position: relative; overflow: hidden; background: var(--pink); }
 .ph img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .2s .3s; }
 .ph img.--loaded { opacity: 1; }
-body.--white .ph { background: var(--black); }
+body.--white .ph { background: var(--pink); }
 
 /* ==========================================================================
    Loader — pink curtain with small white wordmark
