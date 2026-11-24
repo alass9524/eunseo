@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 첫 칠 --><meta name="color-scheme" content="light"><style>html{background:#000}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
   <title>내가 빠져든 어둠 속 · 장은서</title>
 <script>if(/[?&]embed=1/.test(location.search))document.documentElement.classList.add("emb");</script>
   <style>
@@ -2264,7 +2265,7 @@
       // 위플래쉬를 첫 번째로(1 · 2번 자리 바꿈)
       F.forEach(f => { f.key = f.no; }); [F[0], F[1]] = [F[1], F[0]]; F.forEach((f, i) => { f.no = '0' + (i + 1); }); // key: 영화별 디자인(#f01…)은 원래 번호를 따른다
       // 극장 페이지로 열면 장면 원본, 갤러리 안(?embed=1)에서는 그라데이션
-      if (!document.documentElement.classList.contains('emb')) F.forEach(f => { if (f.still) f.still = f.still.replace(/\.png$/, '.jpg'); if (f.cut) f.cut = f.cut.replace('01_cut.png', '01_cut_photo.png'); });
+      const inEmb = document.documentElement.classList.contains('emb'); F.forEach(f => { if (f.still) f.still = f.still.replace(/\.png$/, inEmb ? '_light.jpg' : '.jpg'); if (f.cut) f.cut = inEmb ? '' : f.cut.replace('01_cut.png', '01_cut_photo.webp'); });
       const $ = id => document.getElementById(id);
       const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
       const br = s => esc(s).replace(/\\n|\n/g, '<br>');
