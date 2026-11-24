@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cue, 장은서의 취향 갤러리</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  /* 디자인 시스템: achievable.info 추출 — 24컬럼 · 16px 거터 · 350 굵기 · 음수 자간 · 흑백 + 웜그레이 · 직각 · 모서리 마크 */
+  :root { color-scheme: light; --ground: #fcfcfc; --ink: #000000; --muted: #646464; --line: #d8d7d4; --soft: #efeeec; --thumb: #d9d4cc; --btn: #202020; --accent: #00ff00; --mar: 16px; }
+  @media (min-width: 900px) { :root { --mar: 24px; } }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { color-scheme: dark; --ground: #101010; --ink: #fcfcfc; --muted: #9c9c9c; --line: #2c2c2c; --soft: #1a1a1a; --thumb: #c9c4bc; --btn: #fcfcfc; }
+  }
+  :root[data-theme="dark"] { color-scheme: dark; --ground: #101010; --ink: #fcfcfc; --muted: #9c9c9c; --line: #2c2c2c; --soft: #1a1a1a; --thumb: #c9c4bc; --btn: #fcfcfc; }
+  :root[data-theme="light"] { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0 var(--mar) 96px; background: var(--ground); color: var(--ink); font: 400 16px/1.55 "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-style: normal; letter-spacing: -0.02em; word-break: keep-all; -webkit-font-smoothing: antialiased; position: relative; }
+  body::before, body::after { content: ""; position: fixed; top: 0; bottom: 0; width: 1px; background: var(--line); pointer-events: none; opacity: .7; }
+  body::before { left: var(--mar); }
+  body::after { right: var(--mar); }
+  a { color: var(--ink); }
+  a:focus-visible, button:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 3px; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 56px; font-size: 16px; color: var(--ink); }
+  .top a { color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
+  .top a:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .top .pos { color: var(--muted); }
+  button { height: 44px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--muted); font: 400 16px/1 "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; letter-spacing: -0.02em; cursor: pointer; }
+  button:hover { color: var(--ink); }
+  .label { font-size: 12px; line-height: 1.4; color: var(--muted); letter-spacing: 0; }
+  #error { margin: 24px 0 0; padding-left: 10px; border-left: 1px solid var(--ink); }
+
+  header, main, footer { max-width: 1680px; margin: 0 auto; }
+  header { display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 16px; }
+  header .top { grid-column: 1 / -1; }
+  h1 { grid-column: 1 / -1; margin: 56px 0 0; font-size: clamp(30px, 3.4vw, 48px); line-height: 1.22; font-weight: 350; letter-spacing: -0.03em; text-wrap: balance; }
+  .by { grid-column: 1 / -1; margin: 24px 0 0; font-size: 12px; line-height: 1.4; color: var(--muted); letter-spacing: 0; }
+  .hint { grid-column: 1 / -1; margin: 12px 0 0; font-size: 16px; line-height: 1.55; color: var(--muted); max-width: 34em; }
+  @media (min-width: 900px) {
+    h1 { grid-column: 1 / 9; grid-row: 2 / 4; margin-top: 120px; }
+    .by { grid-column: 9 / -1; grid-row: 2; align-self: end; margin: 120px 0 0; }
+    .hint { grid-column: 9 / -1; grid-row: 3; align-self: start; margin-top: 12px; }
+  }
+  .grid { display: grid; grid-template-columns: repeat(24, 1fr); column-gap: 16px; row-gap: 80px; margin-top: 96px; }
+  .c { grid-column: span 24; min-width: 0; }
+  @media (min-width: 640px) { .c { grid-column: span 12; } }
+  @media (min-width: 1040px) { .c { grid-column: span 8; } }
+  .frame { aspect-ratio: 5 / 4; background: var(--thumb); isolation: isolate; }
+  .frame iframe { mix-blend-mode: multiply; }
+  .frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+  .eyebrow { margin: 20px 0 0; font-size: 12px; line-height: 1.4; color: var(--muted); letter-spacing: 0; }
+  .c h2 { margin: 4px 0 0; font-size: 24px; line-height: 1.25; font-weight: 350; letter-spacing: -0.03em; }
+  dl { margin: 16px 0 0; display: grid; grid-template-columns: 3em 1fr; gap: 6px 16px; }
+  dt { color: var(--muted); font-size: 12px; line-height: 1.9; letter-spacing: 0; }
+  dd { margin: 0; color: var(--muted); }
+  .go { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+  .go:hover { background: var(--accent); color: #000; text-decoration-color: transparent; }
+
+  /* GNB — 메인·서브 공통 */
+  .gnb { position: sticky; top: 0; z-index: 10; background: var(--ground); margin: 0 calc(var(--mar) * -1); padding: 0 var(--mar); }
+  .gnb-in { max-width: 1680px; margin: 0 auto; min-height: 56px; display: flex; align-items: center; gap: 8px 28px; flex-wrap: wrap; }
+  .brand { flex: none; font-size: 16px; color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
+  .weeks { margin-left: auto; display: flex; gap: 4px 20px; overflow-x: auto; scrollbar-width: none; }
+  .weeks::-webkit-scrollbar { display: none; }
+  .weeks a { flex: none; display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; color: var(--muted); text-decoration: none; }
+  .weeks a:hover { color: var(--ink); }
+  .weeks a[aria-current="page"] { color: var(--ink); text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+  @media (max-width: 899px) { .weeks { order: 3; width: 100%; margin: 0 0 4px; } #theme { margin-left: auto; } }
+  @media (min-width: 900px) { #theme { margin-left: 8px; } }
+  @media (max-width: 639px) { .grid { grid-template-columns: 1fr; } .c { grid-column: auto; } }
+
+  /* 마우스 인터랙션 레이어 — 모든 페이지 공통: 커서 링 · 이미지 틸트/패럴랙스 · 자석 링크 · 제목 패럴랙스 */
+  .fx-cur { position: fixed; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%; background: #fff; mix-blend-mode: difference; pointer-events: none; z-index: 300; opacity: 0; transition: width .28s cubic-bezier(.2,.7,.2,1), height .28s cubic-bezier(.2,.7,.2,1), opacity .2s; will-change: transform; }
+  .fx-cur.on { opacity: 1; }
+  .fx-cur.hide { opacity: 0; }
+  .fx-cur.link { width: 44px; height: 44px; }
+  .fx-cur.big { width: 92px; height: 92px; }
+  .fx-cur.down { width: 12px; height: 12px; }
+  .fx-cur span { position: absolute; inset: 0; display: grid; place-items: center; font: 600 11px/1 "Pretendard Variable", Pretendard, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #000; opacity: 0; transition: opacity .2s; }
+  .fx-cur.big span { opacity: 1; }
+  #name, .intro .line, h1#def { transition: translate .6s cubic-bezier(.2,.7,.2,1); }
+  #name, h1#def { translate: calc(var(--mx, 0) * -10px) calc(var(--my, 0) * -7px); }
+  .intro .line, .pin + .flow .line { translate: calc(var(--mx, 0) * 6px) calc(var(--my, 0) * 4px); }
+  .item, .cover, .c .frame { transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+  .item img, .cover img { transition: translate .5s cubic-bezier(.2,.7,.2,1), scale .6s cubic-bezier(.2,.7,.2,1); }
+  .fx-mag { transition: translate .35s cubic-bezier(.2,.7,.2,1); }
+  /* 섬네일 마우스 오버 위아래 모션 삭제 */
+  .c:hover .frame { transform: none; }
+  .c h2 { transition: translate .4s cubic-bezier(.2,.7,.2,1); }
+  .c:hover h2 { translate: 8px 0; }
+  @media (pointer: coarse), (prefers-reduced-motion: reduce) { .fx-cur { display: none; } #name, h1#def, .intro .line { translate: none; } }
+
+  /* 화면 바꾸기 버튼 삭제 */
+  #theme { display: none !important; }
+
+  /* GNB 메뉴: 하단 페이징 숫자와 같은 크기·서체(11px · 600 · 대문자), 영문 */
+  .weeks a { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+  .weeks { gap: 4px 22px; }
+
+  /* 카드 라벨·제목: GNB 메뉴와 같은 크기·서체(11px · 600 · 대문자), 영문 */
+  .eyebrow { margin: 20px 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; line-height: 1.5; color: var(--muted); }
+  .c h2 { margin: 2px 0 0; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; line-height: 1.5; color: var(--ink); }
+
+  /* 카드 설명 라벨 영문 · GNB와 같은 서체 */
+  dl { grid-template-columns: 92px 1fr; }
+  dt { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; line-height: 1.9; }
+
+  /* 카드 제목(A PART 등) 삭제 — 라벨(04 GAZE)과 설명만 남김 */
+  .c h2 { display: none !important; }
+
+  /* 카드 라벨(04 GAZE) 진한 색 */
+  .eyebrow { color: var(--ink) !important; }
+
+  /* 화면 좌우 세로 라인 삭제 */
+  body::before, body::after { display: none !important; }
+
+  /* 설명 항목명(CONTENT · INTENT · STANDARD) 흐리게 */
+  dt { color: #a8a8a8 !important; }
+
+  /* 소개 문장 두 줄 */
+  h1#def { white-space: pre-line; }
+  @media (max-width: 480px) { h1#def { font-size: 25px; } }
+
+  /* 「그 주 작업 보기 →」 마우스 오버 모션 삭제 */
+  .go, .go:hover { translate: none !important; transition: none !important; background: transparent !important; color: var(--ink) !important; text-decoration-color: currentColor !important; }
+
+  /* 소개 문구(샘플 · 안내 문장): 가운데 섬네일의 왼쪽 선에 맞춤 — 카드와 같은 24컬럼, 9번째 칸에서 시작 */
+  @media (min-width: 900px) {
+    header { grid-template-columns: repeat(24, 1fr); }
+    h1#def { grid-column: 1 / -1; grid-row: 2; margin-top: 96px; }
+    .by { grid-column: 9 / -1; grid-row: 3; margin: 40px 0 0; align-self: start; }
+    .hint { grid-column: 9 / -1; grid-row: 4; margin: 12px 0 0; align-self: start; }
+  }
+
+  /* 소개 제목: 마우스를 따라 움직이는 모션 삭제 */
+  h1#def { translate: none !important; transition: none !important; }
+
+  /* 인덱스 컬러: 배경 녹색 · 섬네일 흰색 · 오브젝트 선은 파랑 (참고: Phobos 레퍼런스) */
+  :root { color-scheme: light; --ground: #2747b5 !important; --ink: #ffffff !important; --muted: rgba(255,255,255,.78) !important; --line: rgba(255,255,255,.35) !important; --soft: #ffffff !important; --thumb: #ffffff !important; }
+  body { background: #2747b5; color: #fff; }
+  .frame { background: #ffffff; }
+  .frame iframe { mix-blend-mode: normal; }
+  .eyebrow { color: #fff !important; }
+  dt { color: rgba(255,255,255,.85) !important; line-height: 1.9; }
+  h1#def { line-height: 1.3 !important; }
+  dd { color: rgba(255,255,255,.92); }
+  .by, .hint { color: rgba(255,255,255,.85); }
+  a, .go { color: #fff; }
+  .weeks a { color: rgba(255,255,255,.7); }
+  .weeks a:hover, .weeks a[aria-current="page"], .brand { color: #fff; }
+  .fx-cur { mix-blend-mode: normal; background: #fff; }
+  .fx-cur span { color: #2747b5; }
+
+  /* 「샘플」 라벨 삭제 */
+  .by { display: none !important; }
+
+  /* 인덱스 GNB: 글자 흰색·굵게, 마우스 오버 시에도 글자가 보이도록 커서 링이 링크를 덮지 않게 */
+  .brand, .weeks a, .weeks a:hover, .weeks a[aria-current="page"] { color: #ffffff !important; }
+  .weeks a { font-weight: 700; }
+  .brand { font-weight: 500; }
+
+  /* 마우스 포인터 원: 파랑 (오브젝트 선 색과 동일) */
+  .fx-cur { background: #2747b5 !important; mix-blend-mode: normal !important; }
+  .fx-cur span { color: #ffffff; }
+
+  /* 링크 위 포인터: 글자를 덮지 않는 속 빈 파란 원 */
+  .fx-cur.link { background: transparent !important; border: 2px solid #2747b5; box-sizing: border-box; opacity: 1 !important; }
+
+  /* GNB 위 포인터: 파란 원이 메뉴 위를 따라다니고, 글자는 원 위에 그대로 보인다 */
+  .gnb-ring { position: absolute; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%; background: #2747b5; pointer-events: none; z-index: 0; opacity: 0; transition: width .28s cubic-bezier(.2,.7,.2,1), height .28s cubic-bezier(.2,.7,.2,1), opacity .2s; will-change: transform; }
+  .gnb-ring.on { opacity: 1; }
+  .gnb-ring.big { width: 44px; height: 44px; }
+  .gnb-in { position: relative; z-index: 1; }
+  body.in-gnb .fx-cur { opacity: 0 !important; }
+
+  /* 포인터 원이 글자를 통과: 본문 글자를 원(z-index 300)보다 위 층에 둔다 */
+  h1#def, .by, .hint, .eyebrow, .c dl, .go { position: relative; z-index: 301; }
+  .gnb { z-index: 301; }
+
+  /* 링크(그 주 작업 보기 →) 위: GNB와 같은 속이 찬 파란 원으로 커짐. 글자는 원 위에 보임 */
+  .fx-cur.link { background: #2747b5 !important; border: 0 !important; width: 44px; height: 44px; opacity: 1 !important; }
+
+  /* 로고(Sample Archive): GNB 우측 메뉴와 같은 서체 — 11px · 600 · 대문자 · 자간 .06em (모든 페이지 통일) */
+  .brand, .gnb .brand, body[data-week] .gnb .brand { font-size: 11px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: .06em !important; line-height: 1 !important; }
+
+  /* 인덱스: 메뉴가 700이라 로고도 700으로 */
+  .brand, .gnb .brand { font-weight: 700 !important; }
+</style>
+<style>/* 페이지 전환: 모든 페이지가 같은 속도로 부드럽게 겹쳐 바뀌고, 위쪽 메뉴는 제자리에 있는다 */
+@view-transition { navigation: auto; }
+::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: .38s; animation-timing-function: cubic-bezier(.32,.72,0,1); }
+.gnb { view-transition-name: gnb; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+</style>
+<style>/* 파랑 바탕에서도 커서가 보이게 */ .fx-cur, .gnb-ring { box-shadow: 0 0 0 1.5px #fff; }</style>
+<style>/* 첫 화면: 아래 카드와 같은 세로줄. 왼쪽 한 칸 = cue와 설명, 오른쪽 두 칸 = 사진과 정의 문장. 왼쪽 아래는 비워 둔다 */
+.lead { grid-column: 1 / -1; grid-row: 1; display: grid; grid-template-columns: repeat(24, 1fr); column-gap: 16px; margin-top: 18px; }
+.lead .l { grid-column: 1 / 9; display: flex; flex-direction: column; justify-content: space-between; }
+.lead .logo { margin: -.24em 0 0 -.05em; font: 700 clamp(72px, 12vw, 220px)/1 "Pretendard Variable", Pretendard, "Helvetica Neue", Arial, sans-serif; letter-spacing: -.06em; color: #fff; }
+.lead .mean { margin: 0; max-width: 23em; font-size: 16px; line-height: 1.6; letter-spacing: -.01em; color: rgba(255,255,255,.92); word-break: keep-all; }
+.lead .mean b { display: block; font-weight: 600; color: #fff; }
+.lead img { grid-column: 9 / -1; display: block; width: 100%; aspect-ratio: 2 / 1; object-fit: cover; object-position: 100% 30%; }
+header h1#def { grid-row: 2 !important; margin: 40px 0 0 !important; max-width: none !important; white-space: pre-line !important; text-wrap: balance !important; font: 500 clamp(24px, 2.8vw, 50px)/1.4 "Pretendard Variable", Pretendard, "Helvetica Neue", Arial, sans-serif !important; letter-spacing: -.035em !important; word-break: keep-all; }
+@media (min-width: 900px) { header h1#def { grid-column: 9 / -1 !important; } header .hint { margin-top: 24px !important; } }
+@media (max-width: 899px) { .lead { grid-template-columns: 1fr; row-gap: 24px; } .lead .l, .lead img { grid-column: 1 / -1; } .lead .l { gap: 20px; } .lead .logo { font-size: 32vw; } .lead img { aspect-ratio: 4 / 3; } header h1#def { grid-column: 1 / -1 !important; margin-top: 28px !important; font-size: 6.2vw !important; } }
+</style>
+</head>
+<body>
+<div class="gnb" role="banner"><div class="gnb-in"><a class="brand" id="brand" href="index.html">Name Archive</a><nav class="weeks" aria-label="주차"><a href="weeks/week-04.html">04 Gaze</a><a href="weeks/week-05.html">05 People</a><a href="weeks/week-06.html">06 Space</a><a href="weeks/week-07.html">07 Objects</a><a href="weeks/week-09.html">09 Words</a><a href="weeks/week-10.html">10 Music</a><a href="weeks/week-11.html">11 Film</a></nav><button id="theme" type="button">화면 바꾸기</button></div><span id="pos" hidden></span></div>
+<header>
+    <div class="lead"><div class="l"><p class="logo" lang="en">cue</p><p class="mean"><b>장면을 시작하게 하는 신호.</b>다음은 비워 두고 신호만 준다. 큐가 떨어지면 장면이 바뀌고, 그때부터 빠져든다.</p></div><img src="images/main_cue.jpg?v=3" alt="어둠 속으로 들어오는 무대 조명 세 줄기 (흑백)"></div>
+    <h1 id="def"></h1>
+  <p class="by" id="by"></p>
+  <p class="hint">오브젝트에 마우스를 올려 보세요. 누르면 그 주의 작업 페이지로 이동합니다. 폰에서는 한 번 짚어 움직이고, 3초 안에 한 번 더 누르면 이동합니다.</p>
+</header>
+<main><div class="grid" id="grid"></div><p id="error" role="alert" hidden></p></main>
+<script src="data.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const fail = (m) => { $("error").hidden = false; $("error").textContent = m; };
+  const G = window.GALLERY;
+  if (!G || !Array.isArray(G.cards)) { fail("data.js를 읽지 못했습니다. data.js가 index.html과 같은 폴더에 있는지, 쉼표 · 따옴표 · 괄호가 맞는지 확인하세요. 안 풀리면 data_첫판.js와 비교하세요."); return; }
+  const TOPIC = {"4": "시선", "5": "사람", "6": "공간", "7": "물건", "9": "문장", "10": "음악", "11": "영화"};
+  const EN = {"4": "Gaze", "5": "People", "6": "Space", "7": "Objects", "9": "Words", "10": "Music", "11": "Film"};
+  const pad = (w) => String(w ?? "").padStart(2, "0");
+  const safe = (h) => (h && !/^\s*(javascript|data|vbscript):/i.test(String(h))) ? String(h) : "";
+  const ALLOWED = [4, 5, 6, 7, 9, 10, 11];
+  const OBJECTS = ["bellows", "blinds", "bookshelf", "dial", "dominoes", "drawers", "gears", "hourglass", "keys", "lamp", "metronome", "pins", "ribbon", "riffle", "scale", "spring", "stairs", "terrain", "tower", "turnstile", "valves", "windmill"];
+  const NAME_OK = /^[a-z][a-z0-9-]*$/;
+  const probs = [];
+  if (G.cards.length !== 7) probs.push("카드는 7장이어야 합니다(지금 " + G.cards.length + "장).");
+  const seen = new Set();
+  G.cards.forEach((c, i) => {
+    const n = i + 1;
+    if (!c || c.week == null) { probs.push(n + "번째 카드에 week가 없습니다."); return; }
+    if (!ALLOWED.includes(Number(c.week))) probs.push(n + "번째 카드의 week " + c.week + "는 쓸 수 없습니다(4 · 5 · 6 · 7 · 9 · 10 · 11 중 하나).");
+    if (seen.has(Number(c.week))) probs.push(n + "번째 카드의 week " + c.week + "가 앞 카드와 같습니다.");
+    seen.add(Number(c.week));
+    if (!NAME_OK.test(String(c.object))) probs.push(n + "번째 카드의 object 「" + c.object + "」는 쓸 수 없는 이름입니다(영문 소문자 · 숫자 · 하이픈만 쓰고, objects 안 hairline-이름.html의 이름과 같아야 합니다).");
+  });
+  if (probs.length) fail("data.js를 확인하세요. " + probs.join(" "));
+  const cards = G.cards.slice(0, 7).filter((c) => c && c.week != null && ALLOWED.includes(Number(c.week)));
+  $("def").textContent = String(G.definition || "");
+  $("by").textContent = G.author ? String(G.author) : "";
+  document.title = "cue, 장은서의 취향 갤러리";
+  const BLUE = { plate: "#ffffff", hi: "#2747b5", edge: "#4a67c4", mid: "#8ea0dc", lo: "#cfd7f3" };
+  const colorQuery = (c) => {
+    if (!c || typeof c !== "object") return "";
+    const ok = {};
+    ["plate", "hi", "edge", "mid", "lo"].forEach((k) => { if (typeof c[k] === "string" && /^#[0-9a-fA-F]{3,8}$/.test(c[k])) ok[k] = c[k]; });
+    const sw = Number(c.stroke); if (Number.isFinite(sw) && sw >= 0.5 && sw <= 2.5) ok.stroke = sw;
+    return Object.keys(ok).length ? "&color=" + encodeURIComponent(JSON.stringify(ok)) : "";
+  };
+  const frames = [];
+  cards.forEach((c) => {
+    const obj = NAME_OK.test(String(c.object)) ? c.object : "terrain";
+    const href = safe(c.href) || "weeks/week-" + pad(c.week) + ".html";
+    const art = document.createElement("article"); art.className = "c";
+    const fr = document.createElement("div"); fr.className = "frame";
+    const ifr = document.createElement("iframe");
+    ifr.src = "objects/hairline-" + obj + ".html?embed=1&week=" + encodeURIComponent(c.week) + colorQuery(Object.assign({}, BLUE, (c.color && typeof c.color === "object") ? c.color : {}));
+    ifr.title = (TOPIC[c.week] || "") + " 오브젝트"; ifr.dataset.href = href;
+    fr.appendChild(ifr); art.appendChild(fr); frames.push(ifr);
+    const eb = document.createElement("p"); eb.className = "eyebrow"; eb.textContent = pad(c.week) + " " + (EN[String(c.week)] || ""); art.appendChild(eb);
+    const h = document.createElement("h2"); h.textContent = String(c.nameEn || c.name || ""); art.appendChild(h);
+    const dl = document.createElement("dl");
+    [["Content", c.what], ["Intent", c.why], ["Standard", c.line]].forEach(([k, v]) => { if (!v) return; const dt = document.createElement("dt"), dd = document.createElement("dd"); dt.textContent = k; dd.textContent = String(v); dl.append(dt, dd); });
+    art.appendChild(dl);
+    const a = document.createElement("a"); a.className = "go"; a.href = href; a.textContent = "그 주 작업 보기 →"; art.appendChild(a);
+    $("grid").appendChild(art);
+  });
+  addEventListener("message", (e) => {
+    const d = e.data, ifr = frames.find((f) => f.contentWindow === e.source);
+    if (ifr && d && d.gallery === "go") location.href = ifr.dataset.href;
+  });
+  const root = document.documentElement;
+  const dark = () => (root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches);
+  $("theme").addEventListener("click", () => { const t = dark() ? "light" : "dark"; root.dataset.theme = t; frames.forEach((f) => { try { f.contentWindow.postMessage({ theme: t }, "*"); } catch (_) {} }); });
+})();
+</script>
+<script>(function(){var G=window.GALLERY,b=document.getElementById("brand");if(b&&G&&G.authorEn)b.textContent=G.authorEn+" Archive";})();</script>
+<script>(function(){
+var coarse=matchMedia("(pointer: coarse)").matches,reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;if(coarse||reduce)return;
+var W=document.body.dataset.week||"",root=document.documentElement;
+var c=document.createElement("div");c.className="fx-cur";c.innerHTML="<span></span>";document.body.appendChild(c);var lab=c.firstChild;
+var x=-100,y=-100,cx=x,cy=y;
+function label(t){lab.textContent=t||"";}
+addEventListener("mousemove",function(e){x=e.clientX;y=e.clientY;c.classList.add("on");
+ root.style.setProperty("--mx",((e.clientX/innerWidth)*2-1).toFixed(3));root.style.setProperty("--my",((e.clientY/innerHeight)*2-1).toFixed(3));},{passive:true});
+document.addEventListener("mouseleave",function(){c.classList.remove("on");});
+addEventListener("mousedown",function(){c.classList.add("down");});addEventListener("mouseup",function(){c.classList.remove("down");});
+(function loop(){cx+=(x-cx)*.22;cy+=(y-cy)*.22;c.style.transform="translate("+cx.toFixed(1)+"px,"+cy.toFixed(1)+"px) translate(-50%,-50%)";requestAnimationFrame(loop);})();
+function state(e){var t=e.target;c.classList.remove("link","big","hide");
+ if(!t.closest)return;
+ if(t.closest("iframe,.frame")){c.classList.add("hide");return;}
+ if(t.closest(".lbx-stage")){c.classList.add("big");label(t.closest(".lbx-in")?"Drag":(t.tagName==="IMG"?"Zoom":""));return;}
+ if(t.closest(".lbx button")||t.closest("a,button")){c.classList.add("link");label("");return;}
+ if(t.closest(".item img,.cover img,.flow img")){c.classList.add("big");label(W==="5"?"":(t.closest(".lbx")?"":"View"));return;}
+}
+document.addEventListener("mouseover",state);
+/* 이미지 틸트 + 패럴랙스 */
+function tilt(el){var img=el.querySelector("img");
+ el.addEventListener("mousemove",function(e){var r=el.getBoundingClientRect(),nx=(e.clientX-r.left)/r.width-.5,ny=(e.clientY-r.top)/r.height-.5;
+  el.style.transition="transform .18s";el.style.transform="perspective(1000px) rotateY("+(nx*7).toFixed(2)+"deg) rotateX("+(-ny*7).toFixed(2)+"deg)";
+  if(img){img.style.translate=(nx*-18).toFixed(1)+"px "+(ny*-18).toFixed(1)+"px";img.style.scale="1.06";}});
+ el.addEventListener("mouseleave",function(){el.style.transition="";el.style.transform="";if(img){img.style.translate="";img.style.scale="";}});}
+Array.prototype.forEach.call(document.querySelectorAll(".item,#cover"),tilt);
+/* 자석 링크 */
+function mag(el){el.classList.add("fx-mag");
+ el.addEventListener("mousemove",function(e){var r=el.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);el.style.translate=(dx*.28).toFixed(1)+"px "+(dy*.4).toFixed(1)+"px";});
+ el.addEventListener("mouseleave",function(){el.style.translate="";});}
+Array.prototype.forEach.call(document.querySelectorAll("ul.links a"),mag);
+})();</script>
+<script>(function(){var g=document.querySelector(".gnb");if(!g||matchMedia("(pointer: coarse)").matches||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+var r=document.createElement("div");r.className="gnb-ring";g.insertBefore(r,g.firstChild);
+var x=-100,y=-100,cx=x,cy=y;
+addEventListener("mousemove",function(e){x=e.clientX;y=e.clientY;var b=g.getBoundingClientRect(),inside=e.clientY>=b.top&&e.clientY<=b.bottom;document.body.classList.toggle("in-gnb",inside);r.classList.toggle("on",inside);r.classList.toggle("big",!!(inside&&e.target.closest&&e.target.closest(".gnb a,.gnb button")));},{passive:true});
+document.addEventListener("mouseleave",function(){document.body.classList.remove("in-gnb");r.classList.remove("on");});
+(function loop(){cx+=(x-cx)*.22;cy+=(y-cy)*.22;var b=g.getBoundingClientRect();r.style.transform="translate("+(cx-b.left).toFixed(1)+"px,"+(cy-b.top).toFixed(1)+"px) translate(-50%,-50%)";requestAnimationFrame(loop);})();
+})();</script>
+</body>
+</html>
