@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나의 태도 · 장은서</title>
+<style>
+@font-face{font-family:"ARC";src:url("../../에디터/fonts/Archivo-Variable.woff2") format("woff2-variations"),url("../../에디터/fonts/Archivo-Variable.woff2") format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"PTD";src:url("../../에디터/fonts/PretendardVariable.woff2") format("woff2-variations"),url("../../에디터/fonts/PretendardVariable.woff2") format("woff2");font-weight:45 930;font-display:swap}
+
+/* 9주 디자인 시스템 — Inkwell(inkwell.tech) 실측
+   바탕 #F6F8FA · 글자 #1E272D · 흐린 글자 30% · 회색 #BBBCC4 · FK Grotesk Light → Pretendard 200~300 · FK Grotesk Mono → Archivo 대문자(작은 메뉴) · 영문은 Archivo, 한글은 Pretendard
+   모서리: 버튼 50px 알약 · 이미지 카드 6px · 큰 패널 40px · 색은 모노톤(패널 그러데이션도 회색) */
+:root{
+  --bg:#f6f8fa; --ink:#1e272d; --faint:rgba(30,39,45,.3); --soft:rgba(30,39,45,.08); --grey:#bbbcc4;
+  --sans:"ARC","PTD",system-ui,sans-serif; --mono:"ARC","PTD",system-ui,sans-serif;
+  --panel-a:#8f959b; --panel-b:#e9e8e4;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:300 16px/1.45 var(--sans);-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,h2,b,small{text-wrap:pretty}
+.lead,.lead small,.panel h2,.panel .sum p,.cap,.lb h2{text-wrap:balance}
+.panel h2,.panel .sum p,.lead small{max-width:none}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
+.mono{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+
+/* 위 가운데 메뉴 */
+.top{position:fixed;top:18px;left:50%;transform:translateX(-50%);display:flex;gap:22px;z-index:60}
+.top button{border:0;background:none;padding:4px 0;cursor:pointer;color:var(--faint)}
+.top button[aria-current="true"]{color:var(--ink)}
+.brand{position:fixed;top:16px;left:22px;z-index:60;font-weight:400;font-size:15px}
+.brand small{display:block;color:var(--faint);font-size:13px}
+
+/* 장면 1 — 흩어진 카드 → 계단 */
+.scene{position:relative;height:1100vh}
+.pin{position:sticky;top:0;height:100vh;overflow:hidden;isolation:isolate}
+.field{position:absolute;left:50%;top:46%;width:0;height:0;perspective:1600px;transform-style:preserve-3d}
+.rig{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.photo{position:absolute;left:0;top:0;width:var(--bw);margin:calc(var(--bw) * -.625) 0 0 calc(var(--bw) * -.5);border-radius:6px;overflow:hidden;background:#e6e8eb;will-change:transform,opacity;pointer-events:none;box-shadow:0 18px 40px -24px rgba(30,39,45,.35)}
+.photo{aspect-ratio:4/5}
+.photo img{display:block;width:100%;height:100%;object-fit:cover}
+.card{position:absolute;left:0;top:0;width:var(--bw);aspect-ratio:4/5;margin:calc(var(--bw) * -.625) 0 0 calc(var(--bw) * -.5);border:0;padding:0;background:#fff;border-radius:6px;cursor:zoom-in;transform-style:preserve-3d;will-change:transform;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.card img{display:block;width:100%;height:100%;object-fit:cover;border-radius:6px}
+.card::after{content:"";position:absolute;left:0;right:0;bottom:0;height:7px;border-radius:0 0 6px 6px;background:linear-gradient(#d9dbde,#b9bcc1);transform:translateY(100%) rotateX(-90deg);transform-origin:top}
+.card .shade{position:absolute;inset:0;border-radius:6px;background:linear-gradient(160deg,rgba(255,255,255,.18),rgba(0,0,0,.06));pointer-events:none}
+.card .miss{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:14%;color:var(--faint)}
+.card.empty img{display:none}
+.card.empty .miss{display:flex}
+.card:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
+.w{display:inline-block;opacity:0;transform:translateY(16px);filter:blur(6px);animation:wup .9s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:var(--d,0s)}
+@keyframes wup{to{opacity:1;transform:none;filter:none}}
+.cap b.out{animation:capout .22s ease forwards}
+.cap b.in{animation:capin .5s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes capout{to{opacity:0;transform:translateY(-10px);filter:blur(3px)}}
+@keyframes capin{from{opacity:0;transform:translateY(12px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+.hint{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35;transform:translate(-50%,4px)}}
+.panel h2 .w{animation-play-state:paused}
+.panel.show h2 .w{animation-play-state:running}
+.lb #lbtxt > *{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+.lb.ready #lbtxt > *{opacity:1;transform:none}
+.lb.ready #lbtxt > :nth-child(2){transition-delay:.05s}.lb.ready #lbtxt > :nth-child(3){transition-delay:.1s}.lb.ready #lbtxt > :nth-child(4){transition-delay:.15s}.lb.ready #lbtxt > :nth-child(5){transition-delay:.2s}.lb.ready #lbtxt > :nth-child(6){transition-delay:.25s}
+.lb{opacity:0;transition:opacity .35s ease}
+.lb.ready{opacity:1}
+.lead{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(560px,86vw);text-align:center;font-size:clamp(20px,2.1vw,30px);font-weight:200;line-height:1.35;margin:0;pointer-events:none;text-wrap:balance}
+.lead small{display:block;font-size:15px;font-weight:300;color:var(--faint);margin-top:18px;line-height:1.5}
+.cap{position:absolute;left:50%;bottom:8vh;transform:translateX(-50%);width:min(640px,90vw);text-align:center;margin:0;font-size:15px}
+.cap .f{display:block;color:var(--faint)}
+.cap b{display:block;font-weight:400;margin-top:4px;min-height:1.45em}
+.hint{position:absolute;left:50%;bottom:3vh;transform:translateX(-50%);color:var(--faint)}
+
+/* 장면 2 — 둥근 패널 · 작가의 말 */
+.panel-wrap{padding:0}
+.panel{position:relative;min-height:100vh;border-radius:0;background:linear-gradient(180deg,var(--panel-a),var(--panel-b));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14vh 8vw;color:#fff}
+.panel h2{font-weight:200;font-size:clamp(20px,2.3vw,32px);line-height:1.45;margin:0;text-wrap:balance}
+.panel .by{margin-top:22px;color:rgba(255,255,255,.75)}
+.panel .sum{max-width:34em;margin:56px auto 0;color:var(--ink);font-size:15px;line-height:1.6}
+.panel .sum p{margin:0 0 10px}
+.panel .foot{position:absolute;left:0;right:0;bottom:26px;color:rgba(30,39,45,.55)}
+
+/* 크게 보기 */
+.lb{position:fixed;inset:0;z-index:100;display:none;grid-template-columns:minmax(0,1fr) minmax(260px,380px);gap:5vw;align-items:center;padding:8vh 6vw;background:var(--bg)}
+.lb.on{display:grid}
+.lb figure{margin:0;height:84vh;display:flex;align-items:center;justify-content:flex-end}
+.lb figure img{max-height:84vh;max-width:100%;aspect-ratio:4/5;object-fit:contain;border-radius:6px;box-shadow:0 30px 60px -30px rgba(30,39,45,.45),0 0 0 1px var(--soft);background:#fff;transform-origin:0 0}
+.lb .meta-no{color:var(--faint)}
+.lb h2{font-weight:300;font-size:clamp(20px,1.9vw,26px);line-height:1.4;margin:10px 0 0;white-space:pre-line}
+.lb .src{color:var(--faint);margin:10px 0 0}
+.lb .rs{margin:22px 0 0;font-size:15px;line-height:1.6}
+.lb .mt{margin:16px 0 0;color:var(--faint)}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:34px}
+.pill{border:1px solid var(--ink);border-radius:50px;background:none;padding:9px 16px;cursor:pointer}
+.pill:hover{background:var(--ink);color:var(--bg)}
+.pill[disabled]{opacity:.3;cursor:default;background:none;color:var(--ink)}
+.lb .x{position:absolute;top:18px;right:22px}
+
+@media (max-width:900px){
+  .top{gap:14px}
+  .brand{display:none}
+  .lb{grid-template-columns:1fr;gap:20px;padding:64px 16px 32px;overflow-y:auto;align-items:start}
+  .lb figure{height:auto;justify-content:center}
+  .lb figure img{max-height:62vh}
+  .panel{padding:12vh 20px}
+}
+@media (prefers-reduced-motion:reduce){.w,.cap b.in,.cap b.out{animation-duration:.01s}.hint{animation:none}}
+</style>
+<style>/* 페이지 전환: 모든 페이지가 같은 속도로 부드럽게 겹쳐 바뀌고, 위쪽 메뉴는 제자리에 있는다 */
+@view-transition { navigation: auto; }
+::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: .38s; animation-timing-function: cubic-bezier(.32,.72,0,1); }
+.gnb { view-transition-name: gnb; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+</style>
+</head>
+<body>
+<!-- ▼ 책 내용 — Claude Code가 여기만 채웁니다 (말수집.md · 결정표.md · 회고.md에서) -->
+<script id="book" type="application/json">
+{
+  "title": "나의 태도",
+  "subtitle": "Say it in type.",
+  "author": "장은서",
+  "summary": [
+    "다섯 곡의 가사에 담긴\n무대 위 나의 태도를 글자로 세웠습니다.",
+    "경계를 한 발짝 넘고,\n야유마저 환호로 듣고,\n천천히 깊이 빠져들고,\n끝은 내가 정하고,\n폼 하나에 모든 걸 거는 것.\n다섯 장을 모아 나온 것은\n내가 지키고 싶은 태도 하나였습니다."
+  ],
+  "chapters": [
+    {
+      "no": "01",
+      "text": "객석과 무대는\n한 끝 차이",
+      "source": "X1 「움직여」",
+      "meta": "샘플 한글 17에서 출발 · 마루부리 · 세로쓰기",
+      "reason": "큰 '끝'과 작은 세로 두 줄을 대각선 양 끝에 두어, 그 사이 빈 공간이 객석과 무대 사이의 '한 끝'만큼의 거리로 보이게 했다.",
+      "image": "../png/01.png"
+    },
+    {
+      "no": "02",
+      "text": "야유도\n환호처럼 들릴거야",
+      "source": "X1 「움직여」",
+      "meta": "샘플 한글 11에서 출발 · 마루부리 · 가로쓰기",
+      "reason": "큰 '歡'과 '呼' 사이에 작은 '야유도'를 끼워 넣어, 야유가 환호에 둘러싸여 환호처럼 들리는 순간을 보이게 했다.",
+      "image": "../png/02.png"
+    },
+    {
+      "no": "03",
+      "text": "눈치채지 못한 사이 흠뻑\n전부 다 집어삼킨다",
+      "source": "NCT DREAM 「Drippin'」",
+      "meta": "샘플 한글 06에서 출발 · 마루부리 · 세로쓰기",
+      "reason": "작은 가사 줄이 위에서 천천히 스며 내려오다 아래의 큰 '집어 삼킨다'에 닿아 전부 삼켜지는 흐름을 보이게 했다.",
+      "image": "../png/03.png"
+    },
+    {
+      "no": "04",
+      "text": "내가 먼저\n끝을 말하지 않으면\n끝이\n아니야",
+      "source": "NCT 127 「Superhuman」",
+      "meta": "샘플 한글 14에서 출발 · 마루부리 · 세로쓰기",
+      "reason": "문장이 끝날 것 같은 자리에서 끝나지 않고 '끝이 / 아니야'가 한 번 더 아래로 이어지게 해, 끝을 정하는 건 나라는 말을 배치로 보이게 했다.",
+      "image": "../png/04.png"
+    },
+    {
+      "no": "05",
+      "text": "나 폼 하나에 죽고 살고",
+      "source": "젝스키스 「사나이 가는 길 (폼생폼사)」",
+      "meta": "샘플 한글 20에서 출발 · 마루부리 · 세로쓰기",
+      "reason": "살고 죽고를 오가는 가사 줄이 오르내리는 동안 아래의 큰 '폼' 한 글자는 흔들리지 않고 버티게 해, 폼 하나에 모든 걸 건다는 말을 보이게 했다.",
+      "image": "../png/05.png"
+    }
+  ],
+  "afterword": "말 속에서 가장 크게 들려야 할\n한 단어를 골라 크게 세웠습니다.\n그 한 단어만 봐도\n말 전체가 들리도록.\n어떤 시스템을 입혀도\n이 결정만은 지키고 싶습니다."
+}
+</script>
+<!-- ▲ -->
+<div class="brand" id="brand"></div>
+<nav class="top mono" id="top"><button data-go="intro">Intro</button><button data-go="words">Words</button><button data-go="note">Note</button></nav>
+<section class="scene" id="scene">
+  <div class="pin">
+    <div class="field" id="field"><div class="rig" id="rig"></div></div>
+    <p class="lead" id="lead"></p>
+    <p class="cap" id="cap"><span class="f"></span><b></b></p>
+    <span class="hint mono" id="hint">Scroll</span>
+  </div>
+</section>
+<div class="panel-wrap" id="note"><div class="panel" id="panel"></div></div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="크게 보기">
+  <figure id="lbfig"></figure>
+  <div id="lbtxt"></div>
+  <button class="pill mono x" id="lbx">X Close</button>
+</div>
+<script>
+(() => {
+  const B = JSON.parse(document.getElementById("book").textContent);
+  const esc = s => String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const one = s => String(s || "").replace(/\s*\n\s*/g, " ").trim();
+  const N = B.chapters.length, title = B.title || "제목 없는 책", author = B.author || "지은이";
+  document.title = title;
+  document.getElementById("brand").innerHTML = `${esc(title)}<small>${esc(B.subtitle || "")}</small>`;
+  const panel = document.getElementById("panel");
+  panel.innerHTML = `<h2></h2><p class="by mono">${esc(author)}</p>
+    <div class="sum">${(B.summary || []).slice(1).map(p => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("")}</div>
+    <p class="foot mono">${esc(B.subtitle || "Say it in type.")} · 9주 · 다섯 장의 타이포</p>`;
+
+  /* 단어마다 떠오르기 */
+  const words = (el, text, base = 0, step = .045) => { let n = 0; el.innerHTML = String(text || "").split("\n").map(line => line.split(/(\s+)/).map(w => /\s+/.test(w) ? w : (w ? `<span class="w" style="--d:${(base + n++ * step).toFixed(3)}s">${esc(w)}</span>` : "")).join("")).join("<br>"); };
+  const lead = document.getElementById("lead");
+  lead.innerHTML = `<span id="lt"></span><small id="ls"></small>`;
+  words(document.getElementById("lt"), title, .5, .09);
+  words(document.getElementById("ls"), (B.summary && B.summary[0]) || "아직 비어 있는 책입니다. Claude Code에서 책 만들기라고 치면 채워집니다.", .9, .03);
+  const ph2 = panel.querySelector("h2"); words(ph2, B.afterword || "작가의 말이 여기에 들어갑니다.", 0, .035);
+
+  /* 카드 25장 = 타이포 5장(0·5·10·15·20번 자리) + 사진 10장 × 2 */
+  const rig = document.getElementById("rig"), field = document.getElementById("field");
+  const PH = ["p01", "p02", "p03", "p04", "p05", "p06", "p07", "p08", "p09", "p10"].map(n => `../../자료/사진/${n}.jpg`);
+  const M = 25, slots = [];
+  for (let j = 0, q = 0; j < M; j++) slots.push(j % 5 === 0 ? { typo: j / 5 } : { photo: q++ % PH.length });
+  rig.innerHTML = slots.map((o, j) => o.typo !== undefined
+    ? (c => `<button class="card" data-i="${o.typo}" data-j="${j}" aria-label="${c.no} ${esc(one(c.text)) || "비어 있음"} 크게 보기"><img src="${esc(c.image)}" alt=""><span class="shade"></span><span class="miss mono">${c.no}.png</span></button>`)(B.chapters[o.typo])
+    : `<div class="photo" data-j="${j}"><img src="${PH[o.photo]}" alt="" onerror="this.style.visibility='hidden'"></div>`).join("");
+  const tiles = [...rig.children], cards = [...rig.querySelectorAll(".card")];
+  cards.forEach(el => { const img = el.querySelector("img"); img.onerror = () => el.classList.add("empty"); });
+  const lerp = (a, b, t) => a + (b - a) * t, ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const outE = t => 1 - Math.pow(1 - t, 3);
+  const RM = matchMedia("(prefers-reduced-motion: reduce)").matches, AMP = RM ? .3 : 1;
+  const rnd = k => { const x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+  const scene = document.getElementById("scene"), capB = document.querySelector("#cap b"), capF = document.querySelector("#cap .f"), hint = document.getElementById("hint");
+  const prog = () => { const r = scene.getBoundingClientRect(); return clamp(-r.top / (scene.offsetHeight - innerHeight), 0, 1.0001); };
+  const S = { target: prog(), cur: prog(), mx: 0, my: 0, tmx: 0, tmy: 0, t0: performance.now(), hi: -2 };
+  addEventListener("scroll", () => { S.target = prog(); }, { passive: true });
+  addEventListener("pointermove", e => { S.tmx = e.clientX / innerWidth - .5; S.tmy = e.clientY / innerHeight - .5; }, { passive: true });
+  const setCap = (f, w) => { if (capB.textContent === w && capF.textContent === f) return; capB.className = "out"; setTimeout(() => { capF.textContent = f; capB.textContent = w; capB.className = "in"; }, 200); };
+
+  /* 장면 순서 (Inkwell 실측): 하나씩 나타나 흩어짐 → 한 줄 → 원 → 큰 바퀴로 커지며 아래로 내려가 회전(타이포가 차례로 꼭대기에) → 덱 → 가로 줄 → 대각선 줄 → 모여서 회전하며 사라짐 */
+  const K = [0, .07, .12, .19, .27, .62, .69, .79, .88, 1];   // 장면 경계
+  const W = () => { const vw = innerWidth, vh = innerHeight, narrow = vw < 900; return { vw, vh, narrow, bw: narrow ? Math.min(vw * .34, 150) : Math.min(vw * .17, vh * .3, 250) }; };
+  const L = {
+    scatter: (j, g) => ({ x: (rnd(j) - .5) * g.vw * .86, y: (rnd(j + 50) - .5) * g.vh * .72, z: 0, rx: 0, ry: 0, rz: 0, s: g.narrow ? .2 : .16 }),
+    line:    (j, g) => { const sw = g.bw * (g.narrow ? .2 : .16) * 1.12; return { x: (j - (M - 1) / 2) * sw, y: 0, z: 0, rx: 0, ry: 0, rz: 0, s: g.narrow ? .2 : .16 }; },
+    ring:    (j, g) => { const R = Math.min(g.vw, g.vh) * .29, a = j / M * Math.PI * 2 - Math.PI / 2; return { x: Math.cos(a) * R, y: Math.sin(a) * R, z: 0, rx: 0, ry: 0, rz: a * 180 / Math.PI + 90, s: g.narrow ? .22 : .2 }; },
+    wheel:   (j, g, th) => { const R = g.vh * (g.narrow ? .95 : 1.15), cy = -g.vh * .06 + R, a = j / M * Math.PI * 2 + th; return { x: Math.sin(a) * R, y: cy - Math.cos(a) * R, z: 0, rx: 0, ry: 0, rz: a * 180 / Math.PI, s: .8 }; },
+    deck:    (j, g) => { const d = (j - 0) ; return { x: d * 3, y: -d * 1.5, z: -d * 14, rx: 0, ry: -28, rz: 0, s: 1.05 }; },
+    row:     (j, g, u) => ({ x: (j - 2) * g.bw * 1.12 - u * (M - 5) * g.bw * 1.12, y: 0, z: 0, rx: 0, ry: -16, rz: 0, s: 1.15 }),
+    diag:    (j, g) => { const k = j - (M - 1) / 2; return { x: k * g.bw * .42, y: -k * g.bw * .2, z: -k * 22, rx: 4, ry: -38, rz: 0, s: .7 }; },
+    pile:    (j, g, u) => ({ x: 0, y: 0, z: -j * 3, rx: 8, ry: u * 540 - j * 1.5, rz: 0, s: lerp(.7, .12, u) })
+  };
+  const mixP = (A, Bp, t) => ({ x: lerp(A.x, Bp.x, t), y: lerp(A.y, Bp.y, t), z: lerp(A.z, Bp.z, t), rx: lerp(A.rx, Bp.rx, t), ry: lerp(A.ry, Bp.ry, t), rz: lerp(A.rz, Bp.rz, t), s: lerp(A.s, Bp.s, t) });
+  const seg = (p, i) => clamp((p - K[i]) / (K[i + 1] - K[i]), 0, 1);
+  /* 바퀴 회전: 타이포 다섯 장이 72°마다 — 각 장이 꼭대기에서 잠시 머물게 계단식으로 */
+  const wheelTh = q => { const v = q * 4.6, k = Math.floor(v), f = v - k; const sm = f < .55 ? 0 : ease((f - .55) / .45); return -(Math.min(k, 4) + (k >= 4 ? 0 : sm)) * (Math.PI * 2 / 5) + .0; };
+  let lastSec = "";
+  const frame = now => {
+    const t = (now - S.t0) / 1000, g = W();
+    S.cur += (S.target - S.cur) * .085; S.mx += (S.tmx - S.mx) * .06; S.my += (S.tmy - S.my) * .06;
+    const p = S.cur;
+    rig.style.setProperty("--bw", g.bw + "px");
+    rig.style.transform = `rotateX(${(-S.my * 5 * AMP).toFixed(2)}deg) rotateY(${(S.mx * 7 * AMP).toFixed(2)}deg)`;
+    const qW = seg(p, 4), th = wheelTh(qW), hiRaw = Math.round(-th / (Math.PI * 2 / 5));
+    const inWheel = p > K[4] - .01 && p < K[5] + .02;
+    const hi = inWheel && Math.abs(-th / (Math.PI * 2 / 5) - hiRaw) < .12 ? clamp(hiRaw, 0, 4) : -1;
+    const uRow = seg(p, 6), uPile = seg(p, 8);
+    tiles.forEach((el, j) => {
+      const P = [L.scatter(j, g), L.line(j, g), L.ring(j, g), L.wheel(j, g, 0), L.wheel(j, g, th), L.deck(j, g), L.row(j, g, uRow), L.diag(j, g), L.pile(j, g, uPile)];
+      let pose;
+      if (p < K[1]) pose = P[0];
+      else if (p < K[2]) pose = mixP(P[0], P[1], ease(seg(p, 1)));
+      else if (p < K[3]) pose = mixP(P[1], P[2], ease(seg(p, 2)));
+      else if (p < K[4]) pose = mixP(P[2], P[3], ease(seg(p, 3)));
+      else if (p < K[5]) pose = P[4];
+      else if (p < K[6]) pose = mixP(P[4], P[5], ease(seg(p, 5)));
+      else if (p < K[7]) pose = mixP(P[5], P[6], ease(clamp(seg(p, 6) * 2.2, 0, 1)));
+      else if (p < K[8]) pose = mixP(L.row(j, g, 1), P[7], ease(seg(p, 7)));
+      else pose = mixP(P[7], P[8], ease(clamp(seg(p, 8) * 1.6, 0, 1)));
+      /* 나타나기 — 첫 장면에서 한 장씩 */
+      const appear = RM ? 1 : clamp(t * 6 - j * .35, 0, 1) * clamp((p / K[1]) * M * 1.3 + 7 - j, 0, 1);
+      const isTypo = el.classList.contains("card"), mine = isTypo && +el.dataset.i === hi;
+      const fl = AMP * (p < K[3] ? 1 : .35);
+      const x = pose.x + Math.sin(t * .45 + j * 2.3) * 4 * fl, y = pose.y + Math.sin(t * .7 + j * 1.7) * 5 * fl - (mine ? 18 : 0);
+      const z = pose.z + (mine ? 60 : 0), sc = pose.s * (mine ? 1.08 : 1);
+      el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateZ(${pose.rz.toFixed(2)}deg) rotateX(${pose.rx.toFixed(2)}deg) rotateY(${pose.ry.toFixed(2)}deg) scale(${sc.toFixed(3)})`;
+      let op = appear * (p > K[8] ? 1 - clamp((seg(p, 8) - .55) / .45, 0, 1) : 1);
+      if (inWheel && !isTypo) op *= .7;
+      el.style.opacity = op.toFixed(3);
+      el.style.zIndex = String(mine ? 200 : (p > K[5] && p < K[7] ? 100 - j : 10 + j));
+      el.style.pointerEvents = isTypo && op > .5 ? "auto" : "none";
+    });
+    /* 글 — 처음엔 제목, 원 안에 소개, 바퀴에선 그 말 */
+    const leadOp = Math.max(clamp(1 - p / K[1] * 1.2, 0, 1), clamp((p - K[2]) / .03, 0, 1) * clamp(1 - (p - K[3] + .02) / .03, 0, 1));
+    lead.style.opacity = leadOp.toFixed(3); lead.style.transform = "translate(-50%,-50%)";
+    hint.style.opacity = clamp(1 - p * 30, 0, 1).toFixed(3);
+    if (hi !== S.hi) { S.hi = hi; const c = B.chapters[hi]; hi >= 0 ? setCap(`다섯 개의 말 중 ${c.no}`, one(c.text) || "비어 있음") : setCap(p > K[5] && p < K[8] ? "다섯 개의 말" : "", p > K[5] && p < K[8] ? "카드를 누르면 크게 볼 수 있습니다" : ""); }
+    if (hi < 0 && p > K[5] && p < K[8] && !capB.textContent) setCap("다섯 개의 말", "카드를 누르면 크게 볼 수 있습니다");
+    if (hi < 0 && (p < K[4] || p > K[8]) && capB.textContent) setCap("", "");
+    const pr = panel.getBoundingClientRect(), pp = outE(clamp(1 - pr.top / g.vh, 0, 1));
+    if (pp > .45) panel.classList.add("show");
+    const sec = pr.top < g.vh * .5 ? "note" : (p > K[4] ? "words" : "intro");
+    if (sec !== lastSec) { lastSec = sec; document.querySelectorAll(".top button").forEach(b => b.setAttribute("aria-current", String(b.dataset.go === sec))); }
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+  document.getElementById("top").addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (!g) return; const H = scene.offsetHeight - innerHeight;
+    const y = g.dataset.go === "intro" ? 0 : g.dataset.go === "words" ? scene.offsetTop + H * .3 : document.getElementById("note").offsetTop; scrollTo({ top: y, behavior: "smooth" }); });
+
+  /* 크게 보기 */
+  const lb = document.getElementById("lb"), fig = document.getElementById("lbfig"), txt = document.getElementById("lbtxt");
+  let cur = -1, lastFocus = null;
+  const show = i => {
+    const c = B.chapters[i]; if (!c) return; cur = i;
+    fig.innerHTML = `<img src="${esc(c.image)}" alt="${esc(one(c.text))}" onerror="this.replaceWith(Object.assign(document.createElement('p'),{className:'mono',textContent:'${c.no}.png를 png 폴더에 넣으면 여기에 나타납니다'}))">`;
+    txt.innerHTML = `<p class="meta-no mono">${c.no} / ${String(N).padStart(2, "0")}</p>
+      <h2>${esc(c.text) || "아직 고르지 않은 말"}</h2>
+      ${c.source ? `<p class="src">${esc(c.source)}</p>` : ""}
+      ${c.reason ? `<p class="rs">${esc(c.reason)}</p>` : ""}
+      ${c.meta ? `<p class="mt mono">${esc(c.meta)}</p>` : ""}
+      <div class="pills"><button class="pill mono" data-d="-1" ${i ? "" : "disabled"}>← Prev</button><button class="pill mono" data-d="1" ${i < N - 1 ? "" : "disabled"}>Next →</button></div>`;
+  };
+  const flip = (img, from, dur, back) => { const to = img.getBoundingClientRect(); if (!to.width || !from) return null;
+    const k = [{ transform: `translate(${from.left - to.left}px,${from.top - to.top}px) scale(${from.width / to.width},${from.height / to.height})`, borderRadius: "10px" }, { transform: "none", borderRadius: "6px" }];
+    return img.animate(back ? k.reverse() : k, { duration: dur, easing: "cubic-bezier(.2,.7,.2,1)", fill: "both" }); };
+  const open = i => { lastFocus = document.activeElement; show(i); lb.classList.add("on"); document.body.style.overflow = "hidden";
+    const from = cards[i].getBoundingClientRect(); const img = fig.querySelector("img");
+    requestAnimationFrame(() => { lb.classList.add("ready"); if (img && !RM) flip(img, from, 700); });
+    document.getElementById("lbx").focus({ preventScroll: true }); };
+  const close = () => { const img = fig.querySelector("img"), to = cards[cur] && cards[cur].getBoundingClientRect();
+    const done = () => { lb.classList.remove("on", "ready"); document.body.style.overflow = ""; cur = -1; if (lastFocus) lastFocus.focus({ preventScroll: true }); };
+    if (img && to && !RM) { lb.classList.remove("ready"); const an = flip(img, to, 420, true); an ? an.finished.then(done, done) : done(); } else done(); };
+  field.addEventListener("click", e => { const c = e.target.closest(".card"); if (c) open(+c.dataset.i); });
+  const step = d => { const n = cur + d; if (n < 0 || n >= N) return; const img = fig.querySelector("img"); show(n); const ni = fig.querySelector("img");
+    if (ni && !RM) ni.animate([{ opacity: 0, transform: `translateX(${d * 40}px) scale(.97)` }, { opacity: 1, transform: "none" }], { duration: 420, easing: "cubic-bezier(.2,.7,.2,1)" }); };
+  txt.addEventListener("click", e => { const b = e.target.closest("[data-d]"); if (b && !b.disabled) step(+b.dataset.d); });
+  document.getElementById("lbx").onclick = close;
+  lb.addEventListener("click", e => { if (e.target === lb) close(); });
+  document.addEventListener("keydown", e => { if (cur < 0) return; if (e.key === "Escape") close(); if (e.key === "ArrowRight") step(1); if (e.key === "ArrowLeft") step(-1); });
+})();
+</script>
+<!-- 갤러리로 돌아가기: 6주와 같은 버튼 -->
+<style>.gal-back { position: fixed; top: 72px; left: 24px; z-index: 9999; width: 44px; height: 44px; display: block; opacity: 1; transform: none; } .gal-back svg { transition: opacity .2s; } .gal-back rect { transition: fill-opacity .2s; } .gal-back:hover rect, .gal-back:focus-visible rect { fill-opacity: .75; } .gal-back svg { display: block; width: 100%; height: 100%; } .gal-back:focus-visible { outline: 2px solid #fff; outline-offset: 3px; } @media (max-width: 767px) { .gal-back { left: 16px; top: 100px; } } @media print { .gal-back { display: none; } }</style>
+<script>(function(){if(self!==top)return;var w="9",n=new URLSearchParams(location.search).get("open");
+if(!w){if(!n)return;var b=[].filter.call(document.querySelectorAll(".ca-open"),function(e){return e.textContent.trim()===n;})[0],s=b&&b.closest("section").id;w={s2:"4",s3:"5",s4:"6",s5:"7"}[s];if(!w)return;}
+var a=document.createElement("a");a.className="gal-back";a.href="../../../weeks/week-"+("0"+w).slice(-2)+".html";a.setAttribute("aria-label","갤러리로 돌아가기");a.innerHTML='<svg viewBox="0 0 55 55" aria-hidden="true"><rect width="55" height="55" fill="#222" fill-opacity=".4"/><path d="M17 27.5h21M17 27.5l9.5-9.5M17 27.5l9.5 9.5" stroke="#fff" stroke-width="1.7" fill="none" stroke-linecap="square"/></svg>';
+a.addEventListener("click",function(){try{sessionStorage.setItem("back",w);}catch(e){}});document.body.appendChild(a);})();</script>
+<!-- /갤러리로 돌아가기 -->
+</body>
+</html>
