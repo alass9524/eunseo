@@ -2,9 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<!-- 첫 칠 --><meta name="color-scheme" content="light"><style>html{background:#fff !important}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cue</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<script type="speculationrules">{"prefetch":[{"where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+<!-- 미리 불러오기 -->
 <style>
   /* 디자인 시스템: achievable.info 추출 — 24컬럼 · 16px 거터 · 350 굵기 · 음수 자간 · 흑백 + 웜그레이 · 직각 · 모서리 마크 */
   :root { color-scheme: light; --ground: #fcfcfc; --ink: #000000; --muted: #646464; --line: #d8d7d4; --soft: #efeeec; --thumb: #d9d4cc; --btn: #202020; --accent: #00ff00; --mar: 16px; }
@@ -281,6 +285,68 @@
 .gnb { view-transition-name: gnb; }
 @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
 </style>
+<style>
+/* 7주 물건: 마우스를 올리면 기본 → 펼친 상태. 조각마다 따로 움직인다 */
+.ob { position: absolute; inset: 0; pointer-events: none; --e: cubic-bezier(.3,.75,.2,1); --d: .85s; filter: drop-shadow(0 14px 14px rgba(0,0,0,.14)); perspective: 1800px; }
+.car-s.has-ob > img { opacity: 0; }
+.ob .g { position: absolute; inset: 0; transform: translate(var(--dx), var(--dy)); transition: transform var(--d) var(--e); transform-style: preserve-3d; }
+.on .ob .g { transform: translate(var(--hx, 0%), var(--hy, 0%)); }
+.ob img, .ob .clip { position: absolute; inset: 0; width: 100%; height: 100%; display: block; filter: none !important; background: none !important; object-fit: fill; }
+.ob img { transition: transform var(--d) var(--e), opacity .35s linear; }
+.car-s .ob img { object-fit: fill; }
+/* 다 움직인 뒤에는 자르지 않은 한 장으로 이어 붙인다 */
+.ob .ho { opacity: 0; transition: opacity .05s linear !important; }
+.on .ob .ho { opacity: 1; transition: opacity .16s linear var(--fin, .9s) !important; }
+/* 카드지갑: 지갑이 내려가며 카드가 위로 */
+.ob6 { --fin: .82s; }
+.ob6 .clip { clip-path: inset(-60% -30% calc(100% - var(--slot)) -30%); }
+.ob6 .cards { transform: translateY(40%) rotate(-5deg) scale(.7); transform-origin: 48% 52%; opacity: 0; transition: transform var(--d) var(--e), opacity .05s linear .75s; }
+.on .ob6 .cards { transform: none; opacity: 1; transition: transform var(--d) var(--e) .06s, opacity .05s linear; }
+.ob6 .wallet { opacity: 0; transition: opacity .05s linear .7s; }
+.on .ob6 .wallet { opacity: 1; transition: opacity .05s linear; }
+.ob6 .de { transition: opacity .2s linear .3s; }
+.on .ob6 .de { opacity: 0; transition: opacity .28s linear .1s; }
+/* 엄지 홈에 보이던 카드도 같이 위로 밀려 올라간다 */
+.ob6 .nc { transition: transform .55s cubic-bezier(.3,.6,.3,1) .18s; }
+.on .ob6 .nc { transform: translateY(-17%); transition: transform .55s cubic-bezier(.5,.05,.35,1) .04s; }
+/* USB: 몸통 · 글자 · 고리는 고정. 슬라이더가 홈 안에서 내려가며 단자가 함께 나온다 */
+.ob4 { --m: .62s cubic-bezier(.5,.05,.2,1); }
+.ob4 .conn { transform: translate(var(--px), var(--py)); transition: transform var(--m); }
+.on .ob4 .conn { transform: none; }
+.ob4 .clip.cs { clip-path: var(--groove); }
+.ob4 .patch { transition: transform var(--m), opacity .02s linear; }
+.on .ob4 .patch { transform: translate(var(--sxx), var(--syy)); opacity: 0; transition: transform var(--m), opacity .14s linear .6s; }
+/* 칫솔 케이스 · 노트: 뚜껑(표지)이 왼쪽으로 펴진다 */
+.ob3, .ob5 { --fin: 1s; }
+.ob3 .de, .ob3 .lid, .ob5 .de, .ob5 .lid { backface-visibility: hidden; -webkit-backface-visibility: hidden; transform-origin: var(--hinge) 50%; transition: transform 1s cubic-bezier(.45,.1,.25,1); }
+.ob3 .base, .ob5 .base { opacity: 0; transition: opacity .06s linear .92s; }
+.on .ob3 .base, .on .ob5 .base { opacity: 1; transition: opacity .06s linear; }
+.ob3 .lid, .ob5 .lid { transform: rotateY(180deg); }
+.on .ob3 .lid, .on .ob5 .lid { transform: rotateY(0deg); }
+.on .ob3 .de, .on .ob5 .de { transform: rotateY(-180deg); }
+/* 파우치: 지퍼가 왼쪽에서 오른쪽으로 열리며 천이 휘는 장면을 이어 그린다 */
+.ob2 canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ob2 .g { transition: transform 1.3s cubic-bezier(.4,.05,.2,1); }
+/* 숫자 2: 윗몸이 내려앉고 날개는 위로, 꼬리는 오른쪽으로 */
+/* 꼬리와 날개는 몸통 이음새 밖으로만 보인다 */
+.ob1 .clip.ct { clip-path: var(--seam); }
+.ob1 .clip.cr { clip-path: inset(-40% -60% calc(100% - var(--sy)) -60%); }
+.ob1 .tail { transform: translateX(-56%); }
+.ob1 .rotor { transform: translateY(22%); }
+.ob1 .body { opacity: 0; transition: opacity .2s linear .16s; }
+.on .ob1 .tail { transform: none; transition: transform .85s var(--e) .28s; }
+.on .ob1 .rotor { transform: none; transition: transform .8s var(--e) .34s; }
+.on .ob1 .body { opacity: 1; transition: opacity .2s linear .24s; }
+.ob1 .detop { transition: opacity .16s linear; }
+.on .ob1 .detop { opacity: 0; transition: opacity .2s linear .34s; }
+.ob1 .delow { transition: transform .5s var(--e), opacity .16s linear; }
+.on .ob1 .delow { transform: translateY(var(--drop)); opacity: 0; transition: transform .6s var(--e), opacity .3s linear .22s; }
+body[data-week="7"] .car-cap { width: max(100%, 250px); }
+body[data-week="7"] .car-cap span { -webkit-line-clamp: 3; }
+body.ob-on .fx-cur { opacity: 0 !important; }
+body[data-week="7"] .car-s.c0:focus-visible { outline: 2px solid #2747b5; outline-offset: 8px; }
+@media (prefers-reduced-motion: reduce) { .ob, .ob *, .on .ob * { transition: none !important; } }
+</style>
 </head>
 <body data-week="7">
 <div class="gnb" role="banner"><div class="gnb-in"><a class="brand" id="brand" href="../index.html">Name Archive</a><nav class="weeks" aria-label="주차"><a href="week-04.html">04 Gaze</a><a href="week-05.html">05 People</a><a href="week-06.html">06 Space</a><a href="week-07.html" aria-current="page">07 Objects</a><a href="week-09.html">09 Words</a><a href="week-10.html">10 Music</a><a href="week-11.html">11 Film</a></nav><button id="theme" type="button">화면 바꾸기</button></div><span id="pos" hidden></span></div>
@@ -460,68 +526,6 @@ shots.forEach(function(s,k){if(!s.box)return;s.img.style.cursor="pointer";s.img.
  s.img.addEventListener("click",jump);s.img.addEventListener("keydown",function(e){if(e.key==="Enter")jump();});});
 })();</script>
 <!-- objects-7 -->
-<style>
-/* 7주 물건: 마우스를 올리면 기본 → 펼친 상태. 조각마다 따로 움직인다 */
-.ob { position: absolute; inset: 0; pointer-events: none; --e: cubic-bezier(.3,.75,.2,1); --d: .85s; filter: drop-shadow(0 14px 14px rgba(0,0,0,.14)); perspective: 1800px; }
-.car-s.has-ob > img { opacity: 0; }
-.ob .g { position: absolute; inset: 0; transform: translate(var(--dx), var(--dy)); transition: transform var(--d) var(--e); transform-style: preserve-3d; }
-.on .ob .g { transform: translate(var(--hx, 0%), var(--hy, 0%)); }
-.ob img, .ob .clip { position: absolute; inset: 0; width: 100%; height: 100%; display: block; filter: none !important; background: none !important; object-fit: fill; }
-.ob img { transition: transform var(--d) var(--e), opacity .35s linear; }
-.car-s .ob img { object-fit: fill; }
-/* 다 움직인 뒤에는 자르지 않은 한 장으로 이어 붙인다 */
-.ob .ho { opacity: 0; transition: opacity .05s linear !important; }
-.on .ob .ho { opacity: 1; transition: opacity .16s linear var(--fin, .9s) !important; }
-/* 카드지갑: 지갑이 내려가며 카드가 위로 */
-.ob6 { --fin: .82s; }
-.ob6 .clip { clip-path: inset(-60% -30% calc(100% - var(--slot)) -30%); }
-.ob6 .cards { transform: translateY(40%) rotate(-5deg) scale(.7); transform-origin: 48% 52%; opacity: 0; transition: transform var(--d) var(--e), opacity .05s linear .75s; }
-.on .ob6 .cards { transform: none; opacity: 1; transition: transform var(--d) var(--e) .06s, opacity .05s linear; }
-.ob6 .wallet { opacity: 0; transition: opacity .05s linear .7s; }
-.on .ob6 .wallet { opacity: 1; transition: opacity .05s linear; }
-.ob6 .de { transition: opacity .2s linear .3s; }
-.on .ob6 .de { opacity: 0; transition: opacity .28s linear .1s; }
-/* 엄지 홈에 보이던 카드도 같이 위로 밀려 올라간다 */
-.ob6 .nc { transition: transform .55s cubic-bezier(.3,.6,.3,1) .18s; }
-.on .ob6 .nc { transform: translateY(-17%); transition: transform .55s cubic-bezier(.5,.05,.35,1) .04s; }
-/* USB: 몸통 · 글자 · 고리는 고정. 슬라이더가 홈 안에서 내려가며 단자가 함께 나온다 */
-.ob4 { --m: .62s cubic-bezier(.5,.05,.2,1); }
-.ob4 .conn { transform: translate(var(--px), var(--py)); transition: transform var(--m); }
-.on .ob4 .conn { transform: none; }
-.ob4 .clip.cs { clip-path: var(--groove); }
-.ob4 .patch { transition: transform var(--m), opacity .02s linear; }
-.on .ob4 .patch { transform: translate(var(--sxx), var(--syy)); opacity: 0; transition: transform var(--m), opacity .14s linear .6s; }
-/* 칫솔 케이스 · 노트: 뚜껑(표지)이 왼쪽으로 펴진다 */
-.ob3, .ob5 { --fin: 1s; }
-.ob3 .de, .ob3 .lid, .ob5 .de, .ob5 .lid { backface-visibility: hidden; -webkit-backface-visibility: hidden; transform-origin: var(--hinge) 50%; transition: transform 1s cubic-bezier(.45,.1,.25,1); }
-.ob3 .base, .ob5 .base { opacity: 0; transition: opacity .06s linear .92s; }
-.on .ob3 .base, .on .ob5 .base { opacity: 1; transition: opacity .06s linear; }
-.ob3 .lid, .ob5 .lid { transform: rotateY(180deg); }
-.on .ob3 .lid, .on .ob5 .lid { transform: rotateY(0deg); }
-.on .ob3 .de, .on .ob5 .de { transform: rotateY(-180deg); }
-/* 파우치: 지퍼가 왼쪽에서 오른쪽으로 열리며 천이 휘는 장면을 이어 그린다 */
-.ob2 canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ob2 .g { transition: transform 1.3s cubic-bezier(.4,.05,.2,1); }
-/* 숫자 2: 윗몸이 내려앉고 날개는 위로, 꼬리는 오른쪽으로 */
-/* 꼬리와 날개는 몸통 이음새 밖으로만 보인다 */
-.ob1 .clip.ct { clip-path: var(--seam); }
-.ob1 .clip.cr { clip-path: inset(-40% -60% calc(100% - var(--sy)) -60%); }
-.ob1 .tail { transform: translateX(-56%); }
-.ob1 .rotor { transform: translateY(22%); }
-.ob1 .body { opacity: 0; transition: opacity .2s linear .16s; }
-.on .ob1 .tail { transform: none; transition: transform .85s var(--e) .28s; }
-.on .ob1 .rotor { transform: none; transition: transform .8s var(--e) .34s; }
-.on .ob1 .body { opacity: 1; transition: opacity .2s linear .24s; }
-.ob1 .detop { transition: opacity .16s linear; }
-.on .ob1 .detop { opacity: 0; transition: opacity .2s linear .34s; }
-.ob1 .delow { transition: transform .5s var(--e), opacity .16s linear; }
-.on .ob1 .delow { transform: translateY(var(--drop)); opacity: 0; transition: transform .6s var(--e), opacity .3s linear .22s; }
-body[data-week="7"] .car-cap { width: max(100%, 250px); }
-body[data-week="7"] .car-cap span { -webkit-line-clamp: 3; }
-body.ob-on .fx-cur { opacity: 0 !important; }
-body[data-week="7"] .car-s.c0:focus-visible { outline: 2px solid #2747b5; outline-offset: 8px; }
-@media (prefers-reduced-motion: reduce) { .ob, .ob *, .on .ob * { transition: none !important; } }
-</style>
 <script>(function(){
 var C={"1": {"w": 1500, "h": 1008, "dx": 21.17, "dy": -7.58, "hx": 0.0, "hy": 6.48, "seam": "polygon(50.60% -40%, 180% -40%, 180% 140%, 54.07% 140%, 54.07% 29.06%, 50.60% 22.58%)", "sy": 15.31, "drop": -11.72}, "2": {"w": 1208, "h": 1280, "n": 26, "dx": 0.5, "dy": -1.95, "hx": -0.25, "hy": 0.04}, "3": {"w": 743, "h": 1500, "dx": -19.03, "dy": -0.04, "hx": 2.39, "hy": -0.62, "hinge": 45.43}, "4": {"w": 1500, "h": 1370, "dx": 0.22, "dy": -0.58, "hx": 0.22, "hy": -2.04, "px": 2.78, "py": -15.44, "sxx": -2.66, "syy": 12.85, "groove": "polygon(20.36% 19.79%, 22.89% 20.68%, 28.62% 21.67%, 34.26% 22.74%, 34.42% 26.86%, 33.32% 33.12%, 32.09% 39.84%, 30.05% 49.02%, 28.37% 55.95%, 26.66% 59.62%, 24.20% 61.95%, 20.93% 62.58%, 18.40% 62.40%, 15.04% 61.24%, 12.76% 59.09%, 11.77% 55.95%, 11.98% 51.48%, 13.98% 42.52%, 16.43% 31.33%, 18.32% 22.61%)"}, "5": {"w": 1500, "h": 1388, "dx": -23.64, "dy": 3.45, "hx": 0.96, "hy": 0.0, "hinge": 50.02}, "6": {"w": 1330, "h": 1500, "dx": 5.11, "dy": -24.42, "hx": 0.0, "hy": 0.1, "slot": 96.03}};
 var L={1:["tail","rotor","delow","body","detop"],2:[],3:["base","lid","de","ho"],4:["conn","body","patch","ring"],5:["base","lid","de","ho"],6:["cards","nc","wallet","de","ho"]};
@@ -565,5 +569,7 @@ s.forEach(function(e){new MutationObserver(set).observe(e,{attributes:true,attri
 /* 뒤로가기로 돌아오면 보던 사진에서 다시 시작 */
 var nv=(performance.getEntriesByType("navigation")[0]||{}).type;var bk=false;try{bk=sessionStorage.getItem("back")===document.body.dataset.week;sessionStorage.removeItem("back");}catch(e){}
 if((nv==="back_forward"||bk)&&was&&s[was])s[was].click();ready=true;})();</script>
+<script>/* 한가할 때 다른 주의 첫 사진을 미리 받아 둔다 */
+addEventListener("load",function(){setTimeout(function(){var n=navigator.connection;if(n&&n.saveData)return;(window.GALLERY.cards||[]).forEach(function(c){(c.archive.items||[]).slice(0,2).forEach(function(i){if(i.src&&String(c.week)!=="11")(new Image()).src="../"+i.src;});});["w09_bg_1.jpg"].forEach(function(f){(new Image()).src="../images/"+f;});},1200);});</script>
 </body>
 </html>

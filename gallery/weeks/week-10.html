@@ -2,9 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<!-- 첫 칠 --><meta name="color-scheme" content="dark"><style>html{color-scheme:dark !important}html{background:#000 !important}body{background:#000 !important}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cue</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<script type="speculationrules">{"prefetch":[{"where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+<!-- 미리 불러오기 -->
 <style>
   /* 디자인 시스템: achievable.info 추출 — 24컬럼 · 16px 거터 · 350 굵기 · 음수 자간 · 흑백 + 웜그레이 · 직각 · 모서리 마크 */
   :root { color-scheme: light; --ground: #fcfcfc; --ink: #000000; --muted: #646464; --line: #d8d7d4; --soft: #efeeec; --thumb: #d9d4cc; --btn: #202020; --accent: #00ff00; --mar: 16px; }
@@ -157,6 +161,48 @@
 .gnb { view-transition-name: gnb; }
 @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
 </style>
+<style>
+  body[data-week="10"] { --ground: #000; --ink: #fff; --muted: rgba(255,255,255,.6); background: #000; color: #fff; overflow: hidden; }
+  body[data-week="10"] main { display: none; } body[data-week="10"]::before, body[data-week="10"]::after { display: none !important; }
+  body[data-week="10"] .gnb, body[data-week="10"] .gnb-in { background: transparent !important; }
+  body[data-week="10"] .gnb a { color: rgba(255,255,255,.6) !important; } body[data-week="10"] .gnb a.brand { color: rgba(255,255,255,.85) !important; } body[data-week="10"] .gnb a[aria-current] { color: #fff !important; border-color: #fff !important; }
+  .cds { --s: min(50vh, 60vw, 460px); --d: calc(var(--s) * .06); position: fixed; inset: 56px 0 0; margin: 0; padding: 0; border: 0; background: #000; overflow: hidden; }
+  .cds button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  .cd { position: absolute; left: 50%; top: calc(43% - var(--s) / 2); width: var(--s); height: var(--s); margin-left: calc(var(--s) / -2); transform-style: preserve-3d; transition: transform .7s cubic-bezier(.2,.7,.2,1); transform: translateX(var(--x)) perspective(1700px) rotateY(var(--r)) scale(var(--k, 1)); }
+  .cd > * { position: absolute; top: 0; left: 0; backface-visibility: hidden; }
+  .cd-front { width: 100%; height: 100%; transform: translateZ(calc(var(--d) / 2)); background: #16181b; overflow: hidden; }
+  .cd-front p { position: absolute; left: 8%; bottom: 7%; right: 8%; margin: 0; font-size: 16px; line-height: 1.5; }
+  .cd-front iframe { position: absolute; top: 50%; left: 50%; width: 178%; height: 100%; transform: translate(-50%, -50%); border: 0; pointer-events: none; opacity: 0; transition: opacity .5s; }
+  .cd-front.on iframe { opacity: 1; } .cd-cover { position: absolute; inset: 0; background: center / auto 100% no-repeat; transition: opacity .6s; } .cd-front.play .cd-cover { opacity: 0; }
+  .cd-spine, .cd-side { width: var(--d); height: 100%; background: #e9e8e4; }
+  .cd-spine { width: calc(var(--d) * 3) !important; height: 300% !important; transform-origin: 0 0; transform: translate3d(0, 0, calc(var(--d) / -2)) rotateY(-90deg) scale(.33334);  background: linear-gradient(90deg, #cfcec9, #f1f0ec 30%, #e2e1dc); color: #111; overflow: hidden; }
+  .cd-side { left: auto !important; right: 0; transform: translateX(calc(var(--d) / 2)) rotateY(90deg); background: #1b1d20; }
+  .cd-spine span { position: absolute; top: calc(var(--s) * .05); left: 50%; writing-mode: vertical-rl; transform: translateX(-50%); white-space: nowrap; font-size: clamp(11px, calc(var(--s) * .033), 15px); line-height: 1; letter-spacing: .01em; }
+  .cd-spine span i { font-style: normal; opacity: .55; margin-block-end: 1.2em; margin-inline-end: 1.4em; }
+  .cd-back { width: 100%; height: 100%; transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); background: #16181b; }
+  .cd:not(.cur) .cd-front { visibility: hidden; transition: visibility 0s .6s; }
+  .cd-hit { width: 100%; height: 100%; } .cd-spine { cursor: pointer; } .cd-spine * { pointer-events: none; }
+  .cd-info { position: absolute; left: 50%; top: calc(43% + var(--s) / 2 + 14px); width: var(--s); margin-left: calc(var(--s) / -2); font-size: 13px; line-height: 1.5; opacity: 0; transition: opacity .4s; pointer-events: none; }
+  .cds.sel .cd-info { opacity: 1; pointer-events: auto; }
+  .cd-bar { display: flex; align-items: center; gap: 12px; }
+  .cd-bar button { width: 32px; height: 32px; flex: none; }
+  .cd-bar svg { display: block; width: 14px; height: 14px; margin: 9px; fill: #fff; }
+  .cd-bar input { flex: 1; min-width: 0; height: 32px; margin: 0; appearance: none; -webkit-appearance: none; background: linear-gradient(#fff, #fff) 0 50% / var(--p, 0%) 2px no-repeat, linear-gradient(rgba(255,255,255,.28), rgba(255,255,255,.28)) 0 50% / 100% 2px no-repeat; cursor: pointer; }
+  .cd-bar input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; } .cd-bar input::-moz-range-thumb { width: 10px; height: 10px; border: 0; border-radius: 50%; background: #fff; }
+  .cd-bar time { font-variant-numeric: tabular-nums; color: rgba(255,255,255,.7); white-space: nowrap; }
+  .cd-info b { display: block; margin-top: 6px; font-weight: 400; } .cd-info p { margin: 4px 0 0; color: rgba(255,255,255,.7); word-break: keep-all; } .cd-info a { display: inline-block; margin-top: 6px; color: #fff; text-underline-offset: 4px; }
+  .cd-no { position: absolute; left: 50%; top: calc(43% + var(--s) / 2 + 30px); width: 40px; margin-left: -20px; text-align: center; font-size: 13px; line-height: 1; color: rgba(255,255,255,.7); transform: translateX(var(--x)); transition: transform .7s cubic-bezier(.2,.7,.2,1), opacity .3s; pointer-events: none; }
+  /* 들어올 때: 다른 주의 사진과 같은 출발점 · 같은 속도 */
+  .cds.in .cd, .cds.in .cd-no { transition: none; }
+  .cds.enter .cd, .cds.enter .cd-no { animation: cd-in .7s cubic-bezier(.2,.7,.2,1) backwards; }
+  @keyframes cd-in { from { translate: calc(var(--s) / 2 - var(--x)) calc(var(--s) / 2); } }
+  @media (prefers-reduced-motion: reduce) { .cds.enter .cd, .cds.enter .cd-no { animation: none; } }
+  .cd-n { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font-size: 13px; pointer-events: none; }
+  .cd-open { position: absolute; right: 24px; bottom: 16px; font-size: 13px; color: #fff; text-underline-offset: 4px; }
+  .cds :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  @media (max-width: 640px) { .cds { --s: min(46vh, 68vw); } .cd-open { right: 0; left: 0; bottom: 40px; text-align: center; } }
+  @media (prefers-reduced-motion: reduce) { .cd, .cd-info, .cd-front iframe { transition: none; } }
+</style>
 </head>
 <body data-week="10">
 <div class="gnb" role="banner"><div class="gnb-in"><a class="brand" id="brand" href="../index.html">Name Archive</a><nav class="weeks" aria-label="주차"><a href="week-04.html">04 Gaze</a><a href="week-05.html">05 People</a><a href="week-06.html">06 Space</a><a href="week-07.html">07 Objects</a><a href="week-09.html">09 Words</a><a href="week-10.html" aria-current="page">10 Music</a><a href="week-11.html">11 Film</a></nav><button id="theme" type="button">화면 바꾸기</button></div><span id="pos" hidden></span></div>
@@ -293,48 +339,6 @@ function mag(el){el.classList.add("fx-mag");
 Array.prototype.forEach.call(document.querySelectorAll(".go,ul.links a"),mag);
 })();</script>
 <!-- cd-10 -->
-<style>
-  body[data-week="10"] { --ground: #000; --ink: #fff; --muted: rgba(255,255,255,.6); background: #000; color: #fff; overflow: hidden; }
-  body[data-week="10"] main { display: none; } body[data-week="10"]::before, body[data-week="10"]::after { display: none !important; }
-  body[data-week="10"] .gnb, body[data-week="10"] .gnb-in { background: transparent !important; }
-  body[data-week="10"] .gnb a { color: rgba(255,255,255,.6) !important; } body[data-week="10"] .gnb a.brand { color: rgba(255,255,255,.85) !important; } body[data-week="10"] .gnb a[aria-current] { color: #fff !important; border-color: #fff !important; }
-  .cds { --s: min(50vh, 60vw, 460px); --d: calc(var(--s) * .06); position: fixed; inset: 56px 0 0; margin: 0; padding: 0; border: 0; background: #000; overflow: hidden; }
-  .cds button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
-  .cd { position: absolute; left: 50%; top: calc(43% - var(--s) / 2); width: var(--s); height: var(--s); margin-left: calc(var(--s) / -2); transform-style: preserve-3d; transition: transform .7s cubic-bezier(.2,.7,.2,1); transform: translateX(var(--x)) perspective(1700px) rotateY(var(--r)) scale(var(--k, 1)); }
-  .cd > * { position: absolute; top: 0; left: 0; backface-visibility: hidden; }
-  .cd-front { width: 100%; height: 100%; transform: translateZ(calc(var(--d) / 2)); background: #16181b; overflow: hidden; }
-  .cd-front p { position: absolute; left: 8%; bottom: 7%; right: 8%; margin: 0; font-size: 16px; line-height: 1.5; }
-  .cd-front iframe { position: absolute; top: 50%; left: 50%; width: 178%; height: 100%; transform: translate(-50%, -50%); border: 0; pointer-events: none; opacity: 0; transition: opacity .5s; }
-  .cd-front.on iframe { opacity: 1; } .cd-cover { position: absolute; inset: 0; background: center / auto 100% no-repeat; transition: opacity .6s; } .cd-front.play .cd-cover { opacity: 0; }
-  .cd-spine, .cd-side { width: var(--d); height: 100%; background: #e9e8e4; }
-  .cd-spine { width: calc(var(--d) * 3) !important; height: 300% !important; transform-origin: 0 0; transform: translate3d(0, 0, calc(var(--d) / -2)) rotateY(-90deg) scale(.33334);  background: linear-gradient(90deg, #cfcec9, #f1f0ec 30%, #e2e1dc); color: #111; overflow: hidden; }
-  .cd-side { left: auto !important; right: 0; transform: translateX(calc(var(--d) / 2)) rotateY(90deg); background: #1b1d20; }
-  .cd-spine span { position: absolute; top: calc(var(--s) * .05); left: 50%; writing-mode: vertical-rl; transform: translateX(-50%); white-space: nowrap; font-size: clamp(11px, calc(var(--s) * .033), 15px); line-height: 1; letter-spacing: .01em; }
-  .cd-spine span i { font-style: normal; opacity: .55; margin-block-end: 1.2em; margin-inline-end: 1.4em; }
-  .cd-back { width: 100%; height: 100%; transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); background: #16181b; }
-  .cd:not(.cur) .cd-front { visibility: hidden; transition: visibility 0s .6s; }
-  .cd-hit { width: 100%; height: 100%; } .cd-spine { cursor: pointer; } .cd-spine * { pointer-events: none; }
-  .cd-info { position: absolute; left: 50%; top: calc(43% + var(--s) / 2 + 14px); width: var(--s); margin-left: calc(var(--s) / -2); font-size: 13px; line-height: 1.5; opacity: 0; transition: opacity .4s; pointer-events: none; }
-  .cds.sel .cd-info { opacity: 1; pointer-events: auto; }
-  .cd-bar { display: flex; align-items: center; gap: 12px; }
-  .cd-bar button { width: 32px; height: 32px; flex: none; }
-  .cd-bar svg { display: block; width: 14px; height: 14px; margin: 9px; fill: #fff; }
-  .cd-bar input { flex: 1; min-width: 0; height: 32px; margin: 0; appearance: none; -webkit-appearance: none; background: linear-gradient(#fff, #fff) 0 50% / var(--p, 0%) 2px no-repeat, linear-gradient(rgba(255,255,255,.28), rgba(255,255,255,.28)) 0 50% / 100% 2px no-repeat; cursor: pointer; }
-  .cd-bar input::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; } .cd-bar input::-moz-range-thumb { width: 10px; height: 10px; border: 0; border-radius: 50%; background: #fff; }
-  .cd-bar time { font-variant-numeric: tabular-nums; color: rgba(255,255,255,.7); white-space: nowrap; }
-  .cd-info b { display: block; margin-top: 6px; font-weight: 400; } .cd-info p { margin: 4px 0 0; color: rgba(255,255,255,.7); word-break: keep-all; } .cd-info a { display: inline-block; margin-top: 6px; color: #fff; text-underline-offset: 4px; }
-  .cd-no { position: absolute; left: 50%; top: calc(43% + var(--s) / 2 + 30px); width: 40px; margin-left: -20px; text-align: center; font-size: 13px; line-height: 1; color: rgba(255,255,255,.7); transform: translateX(var(--x)); transition: transform .7s cubic-bezier(.2,.7,.2,1), opacity .3s; pointer-events: none; }
-  /* 들어올 때: 다른 주의 사진과 같은 출발점 · 같은 속도 */
-  .cds.in .cd, .cds.in .cd-no { transition: none; }
-  .cds.enter .cd, .cds.enter .cd-no { animation: cd-in .7s cubic-bezier(.2,.7,.2,1) backwards; }
-  @keyframes cd-in { from { translate: calc(var(--s) / 2 - var(--x)) calc(var(--s) / 2); } }
-  @media (prefers-reduced-motion: reduce) { .cds.enter .cd, .cds.enter .cd-no { animation: none; } }
-  .cd-n { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font-size: 13px; pointer-events: none; }
-  .cd-open { position: absolute; right: 24px; bottom: 16px; font-size: 13px; color: #fff; text-underline-offset: 4px; }
-  .cds :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-  @media (max-width: 640px) { .cds { --s: min(46vh, 68vw); } .cd-open { right: 0; left: 0; bottom: 40px; text-align: center; } }
-  @media (prefers-reduced-motion: reduce) { .cd, .cd-info, .cd-front iframe { transition: none; } }
-</style>
 <script>
 (function () {
   var c = (window.GALLERY.cards || []).filter(function (x) { return String(x.week) === "10"; })[0], A = c.archive, N = A.items.length, cur = -1, yt, dur = 0, now = 0, playing = false, drag = false, lock = 0, veil = 0;
@@ -391,5 +395,7 @@ Array.prototype.forEach.call(document.querySelectorAll(".go,ul.links a"),mag);
 })();
 </script>
 <!-- /cd-10 -->
+<script>/* 한가할 때 다른 주의 첫 사진을 미리 받아 둔다 */
+addEventListener("load",function(){setTimeout(function(){var n=navigator.connection;if(n&&n.saveData)return;(window.GALLERY.cards||[]).forEach(function(c){(c.archive.items||[]).slice(0,2).forEach(function(i){if(i.src&&String(c.week)!=="11")(new Image()).src="../"+i.src;});});["w09_bg_1.jpg"].forEach(function(f){(new Image()).src="../images/"+f;});},1200);});</script>
 </body>
 </html>

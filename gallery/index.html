@@ -2,9 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<!-- 첫 칠 --><meta name="color-scheme" content="light"><style>html{background:#2747b5 !important}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cue, 장은서의 취향 갤러리</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<script type="speculationrules">{"prefetch":[{"where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+<!-- 미리 불러오기 -->
 <style>
   /* 디자인 시스템: achievable.info 추출 — 24컬럼 · 16px 거터 · 350 굵기 · 음수 자간 · 흑백 + 웜그레이 · 직각 · 모서리 마크 */
   :root { color-scheme: light; --ground: #fcfcfc; --ink: #000000; --muted: #646464; --line: #d8d7d4; --soft: #efeeec; --thumb: #d9d4cc; --btn: #202020; --accent: #00ff00; --mar: 16px; }
@@ -319,5 +323,7 @@ addEventListener("mousemove",function(e){x=e.clientX;y=e.clientY;var b=g.getBoun
 document.addEventListener("mouseleave",function(){document.body.classList.remove("in-gnb");r.classList.remove("on");});
 (function loop(){cx+=(x-cx)*.22;cy+=(y-cy)*.22;var b=g.getBoundingClientRect();r.style.transform="translate("+(cx-b.left).toFixed(1)+"px,"+(cy-b.top).toFixed(1)+"px) translate(-50%,-50%)";requestAnimationFrame(loop);})();
 })();</script>
+<script>/* 한가할 때 다른 주의 첫 사진을 미리 받아 둔다 */
+addEventListener("load",function(){setTimeout(function(){var n=navigator.connection;if(n&&n.saveData)return;(window.GALLERY.cards||[]).forEach(function(c){(c.archive.items||[]).slice(0,2).forEach(function(i){if(i.src&&String(c.week)!=="11")(new Image()).src=""+i.src;});});["w09_bg_1.jpg"].forEach(function(f){(new Image()).src="images/"+f;});},1200);});</script>
 </body>
 </html>
